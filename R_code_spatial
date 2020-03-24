@@ -1,0 +1,34 @@
+#R spatial funzioni spaziali in ecologia del paesaggio
+install.packages("sp")
+library sp
+head(meuse)
+data(meuse)
+#plot cadmium e lead
+#alleghiamo il data frame
+attach(meuse)
+plot(cadmium,lead,col="red",pch=19,cex=2)
+#exercise plot di copper  e zinco con simbolo triangolo 17 e colore verde
+plot(copper,zinc,col="green",pch=17,cex=2)
+#cambiare le etichette
+plot(copper,zinc,col="green",pch=17,cex=2,xlab="rame",ylab="zinco")
+# multiframe o multipanel
+par(mfrow=c( 1,2))
+plot(cadmium,lead,col="red",pch=19,cex=2)
+plot(copper,zinc,col="green",pch=17,cex=2)
+#invertiamo grafici rigga/colonna colonna rigga
+par(mfrow=c( 2,1))
+plot(cadmium,lead,col="red",pch=19,cex=2)
+plot(copper,zinc,col="green",pch=17,cex=2)
+
+#multigrame automatico
+install.packages("GGally")
+library(GGaly)
+ggpairs(meuse[3:6])
+#spatial
+head(meuse)
+
+coordinates (meuse)=~x+y
+#funzione per plotare dati spaziali
+plot(meuse)
+#funzione spplot per plottare i dati spazialmente
+spplot(meuse,"zinc")
