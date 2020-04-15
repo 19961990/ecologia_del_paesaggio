@@ -87,10 +87,117 @@ par(mfrow=c(1,2))
 plotRGB(p224r63_2011, r=3, g=2, b=1, stretch="Lin")
 plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
   #nir nella componente  R red
-  plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
+  plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")  #Lin per lineare
   #excercise nir nella componente green si vede la parte della vegetazione.la parte nuda del suola viola.G green
   plotRGB(p224r63_2011, r=3, g=4, b=2, stretch="Lin")
   #nir nella componente blue le piante saranno blu e solo nudo giallo
   plotRGB(p224r63_2011, r=3, g=2, b=4, stretch="Lin")
   #--------------- 1988 comando per la prossima volta
+  # dopo pasqua 
+ library (raster) 
+ setwd("C:/lab/")    
+  load("teleril")  
+     ls()
+  p224r63_1988 <- brick("p224r63_1988_masked.grd")  #p per patch
+    p224r63_1988 <- brick("p224r63_1988_masked.grd")  #brick per importare le immagini satellitari tutti insieme
+    plot(p224r63_1988)
+    # multiframe
+par(mfrow=c(2,2))
 
+# blue
+clb <- colorRampPalette(c('dark blue','blue','light blue'))(100) # 
+plot(p224r63_1988$B1_sre, col=clb)
+
+# green
+clg <- colorRampPalette(c('dark green','green','light green'))(100) # 
+plot(p224r63_1988$B2_sre, col=clg)
+
+# red
+clr <- colorRampPalette(c('dark red','red','pink'))(100) # 
+plot(p224r63_1988$B3_sre, col=clr)
+
+# nir
+clnir <- colorRampPalette(c('red','orange','yellow'))(100) # 
+plot(p224r63_1988$B4_sre, col=clnir)
+  dev.off()  
+ # B1: blue - 1
+# B2: green - 2
+# B3: red - 3
+# B4: near infrared (nir) - 4  
+ plotRGB(p224r63_1988, r=3, g=2, b=1, stretch="Lin") 
+    #exercice plot the imagee using the nir on the "r"component in the RGB space
+    plotRGB(p224r63_1988, r=4, g=3, b=2, stretch="Lin")
+  #plot delle 2 immagine 1988 e 2011 facciamo un multi panel per questo usiamo par  
+ plotRGB(p224r63_1988, r=4, g=3, b=2, stretch="Lin") 
+ plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
+ #agiungere un titolo al grafico si usa name   
+par(mfrow=c(2,1))
+plotRGB(p224r63_1988, r=4, g=3, b=2, stretch="Lin", main="1988")
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin", main="2011") 
+  #chiudere il multiframe par   
+   dev.off() 
+ #spectral indices   
+  # per collegare data set a l immagine ,<- per ridurre un ogetto a un altro cosi senza parantesi dopo, sre e il sensore
+    dvi1988 <- p224r63_2011$B4_sre-p224r63_2011$B3_sre
+    plot(dvi1988)
+    #exercicce calculate dvi for 2011
+    dvi2011 <- p224r63_2011$B4_sre-p224r63_2011$B3_sre #sre significa  difference vegetation index
+    plot(dvi2011)
+     #esempio palette di  colore del dvi
+cldvi <- colorRampPalette(c('light blue','light green','green'))(100) # 
+plot(dvi2011, col=cldvi)    
+#analisi multitemporale   per mlostrare vegetazioni che hanno subito piu o meno stress  
+ difdvi <- dvi2011 - dvi1988
+plot(difdvi)    
+ cldifdvi <- colorRampPalette(c('red','white','blue'))(100) # col e color rampe palette
+plot(difdvi, col=cldifdvi) 
+ #visualize the output
+ #multiframe 1998rgb,2011 rgb,difdiv
+  par(mfrow=c(3,1))
+plotRGB(p224r63_1988, r=4, g=3, b=2, stretch="Lin")
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
+plot(difdvi, col=cldifdvi)  
+ dev.off()   
+#modificare la grana o resoluzione con aggregate
+ p224r63_2011lr <- aggregate(p224r63_2011, fact=10) #lr significa low resolution, fact o fattore e l argomento o il pixe
+ p224r63_2011
+ p224r63_2011lr
+par(mfrow=c(2,1))
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
+plotRGB(p224r63_2011lr, r=4, g=3, b=2, stretch="Lin")
+  #lower resolution
+   p224r63_2011lr50 <- aggregate(p224r63_2011, fact=50) 
+p224r63_2011lr50    
+   #original 30m risampled  a 1500m
+par(mfrow=c(3,1))
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
+plotRGB(p224r63_2011lr, r=4, g=3, b=2, stretch="Lin")
+plotRGB(p224r63_2011lr50, r=4, g=3, b=2, stretch="Lin")    
+    
+dvi2011lr50 <- p224r63_2011lr50$B4_sre - p224r63_2011lr50$B3_sre 
+ dev.off()
+    # immagine 1988 con bassa resoluzione
+plot(dvi2011lr50) 
+  p224r63_1988lr50 <- aggregate(p224r63_1988, fact=50)  
+dvi1988lr50 <- p224r63_1988lr50$B4_sre - p224r63_1988lr50$B3_sre 
+ #differenza dei 2 indici di vegetazione   DI 2011 ler del 1988 lr 50
+    difdvilr50 <- dvi2011lr50 - dvi1988lr50
+  #multiframe con 2 dati finali per avere la grana giusta con quella a alta e bassa risoluzione
+ par(mfrow=c(2,1))
+plot(difdvi, col=cldifdvi)
+plot(difdvilr50, col=cldifdvi)
+  
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
