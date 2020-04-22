@@ -68,5 +68,23 @@ plot(coastlines, col="blue", add=T)
 cl <- colorRampPalette(c('red','orange','yellow','green', 'blue'))(100)
 plot(coastlines, col="yellow", add=T)
 
+#EXERCISE CARicare il worksace point patten Rdata (load(",.,") e creare 
+library(spatstat)
+library(rgdal) # for the coastlines
+
+setwd("C:/lab")
+load("point_pattern.RData") #per aggiungere punti si usa points pattern
+ls()
+
+cl5 <- colorRampPalette(c('cyan', 'purple', 'red')) (200) 
+plot(d, col=cl5, main="density")
+points(covids)
+coastlines <- readOGR("ne_10m_coastline.shp")
+plot(coastlines, add=T)
+covid <- ppp (lon,lat, c(-180,180), c(-90,90))
+
+
+
+
 
 
