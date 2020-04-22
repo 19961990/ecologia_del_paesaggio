@@ -28,7 +28,7 @@ ggplot(mpg,aes(x=displ,y=hwy)) + geom_polygon() #per poligoni
 ggplot(covid,aes(x=lon,y=lat,size=cases)) + geom_point()#grandezza dei punti o paesi size uguale a colona  chi est cases
 #density
 #create dataset for spatstat
-attach(covid)
+attach(covid) #dataset originali
 covidsppp<-(lon,lat,c(-180,180),c(-90,90))
  
 d<- density(covids)
@@ -81,9 +81,62 @@ plot(d, col=cl5, main="density")
 points(covids)
 coastlines <- readOGR("ne_10m_coastline.shp")
 plot(coastlines, add=T)
-covid <- ppp (lon,lat, c(-180,180), c(-90,90))
 
 
+#interpolazione
+head(covid) #per vedere la tabella di covid
+view(covid) #per vedere tutti i paesi
+marks(covids) <- covid$cases  # marks per pescare i valori dentro alla colonna che ci interessa
+ library(spatstat) #a l interno ci sono valori che vogliamo interpolare
+marks(covids) <- covid$cases
+s <- Smooth(covids) #significa mappa continua dei covid puni sulla base dei casi di covid 
+plot(s)
+#exercice plot(S) with points and coastlines
+cl5 <- colorRampPalette(c('cyan', 'purple', 'red')) (200) 
+plot(s, col=cl5, main="density")
+points(covids)
+coastlines <- readOGR("ne_10m_coastline.shp")
+plot(coastlines, add=T)
+
+text(covids)
+#chiudiamo l esercizio con la mappa finale
+
+par(mfrow=c(2,1))
+
+# densità
+cl5 <- colorRampPalette(c('cyan', 'purple', 'red')) (200) 
+plot(d, col=cl5, main="density")
+points(covids)
+coastlines <- readOGR("ne_10m_coastline.shp")
+plot(coastlines, add=T)
+
+
+# interpolazione del numero di casi
+cl5 <- colorRampPalette(c('cyan', 'purple', 'red')) (200) 
+plot(s, col=cl5, main="estimate of cases")
+points(covids)
+coastlines <- readOGR("ne_10m_coastline.shp")
+plot(coastlines, add=T)
+
+###san marino
+setwd("C:/lab")
+#libbrary spatstat
+load("Tesi.RData")    
+ls()
+head(Tesi)
+attach(Tesi)
+#SUMMARY TESI
+#x varia da 12.42 a 12.46
+#y varia da 43.91 a 43.93
+#point pattern x,y,c(xmin,xmax),x,y,c(ymin,ymax)
+Tesippp <- ppp(Longitude, Latitude, c(12.41,12.47), c(43.9,43.95))
+# creare la mappa di densita
+dT <- density(Tesippp)
+dev.off()
+plot(dT)
+plot(dT)
+points(Tesippp, col="green")
+ 
 
 
 
