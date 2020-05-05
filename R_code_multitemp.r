@@ -68,6 +68,37 @@ View(output) : cover before after
 
 library(ggplot2)#per plottare le mappe raster
 
+# O5 MAGGIO
+library(raster)
+setwd("C:/lab/")
+load("defor.RData")
+ls()
+par(mfrow=c(1,2))
+cl <- colorRampPalette(c('black','green'))(100) # 
+plot(d1c$map, col=cl)
+plot(d2c$map, col=cl)
+#percentuale di foresta attuale e quella prcedente
+library(ggplot2)
+ggplot(output, aes(x=cover, y=before, color=cover)) + #cover e la copertura ,geom barre sono le barre a creare, fill e la colorazione a l interno delle barre sara bianca
+geom_bar(stat="identity", fill="white") # identity significa.......
+dev.off()
+
+#exercise plot histograms of landcover after deforestation
+ggplot(output, aes(x=cover, y=after, color=cover)) +
+geom_bar(stat="identity", fill="white")
+install.packages("gridExtra")
+library(gridExtra)
+#grid.arrange(p1, p2, nrow = 1) # this needs griExtra
+#histograms of % di deforestazione
+
+grafico1 <- ggplot(output, aes(x=cover, y=before, color=cover)) + 
+geom_bar(stat="identity", fill="white")
+
+grafico2 <- ggplot(output, aes(x=cover, y=after, color=cover)) + 
+geom_bar(stat="identity", fill="white")
+#exercise use grid arrange to plot 2 graphs
+library(gridExtra)
+grid.arrange(grafico1, grafico2, nrow = 1)
 
 
 
