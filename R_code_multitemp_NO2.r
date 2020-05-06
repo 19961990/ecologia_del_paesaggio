@@ -60,6 +60,33 @@ plot(EN11, col=cl)
 plot(EN12, col=cl)
 plot(EN13, col=cl)
 
+ #Metodo per caricare tutti i file con ciclo for:
+    
+library(raster)
+
+setwd("~/lab/esa_no2")
+# put all files into the folder
+
+rlist=list.files(pattern=".png", full.names=T)
+
+#save raster into list
+#con lappy
+
+list_rast=lapply(rlist, raster)
+
+#con ciclo for
+list_rast=list()
+for(i in 1:length(rlist)){
+  r=raster(rlist[[i]])
+  list_rast[[i]]=r
+}
+
+
+
+
+
+
+
 
 
 
