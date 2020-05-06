@@ -78,12 +78,22 @@ list_rast=lapply(rlist, raster)
 list_rast=list()
 for(i in 1:length(rlist)){
   r=raster(rlist[[i]])
-  list_rast[[i]]=r
-}
+  list_rast[[i]]=r} 
+#6 maggio
+setwd("C:/lab/")
+load("EN.RData")
+setwd("C:/lab/esa_NO2")
+rlist <- list.files(pattern=".png")# list file e la lista dei file a l interno della cartella
+rlist #vedere la lista
+listafinale <- lapply(rlist, raster)
+listafinale
+[12:47] Duccio Rocchini
+    
+EN <- stack(listafinale)
 
-
-
-
+cl <- colorRampPalette(c('red','orange','yellow'))(100) #
+ cl <- colorRampPalette(c('red','orange','yellow'))(100) # 
+plot(EN, col=cl)
 
 
 
