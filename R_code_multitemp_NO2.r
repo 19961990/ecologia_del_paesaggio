@@ -87,13 +87,39 @@ rlist <- list.files(pattern=".png")# list file e la lista dei file a l interno d
 rlist #vedere la lista
 listafinale <- lapply(rlist, raster)
 listafinale
-[12:47] Duccio Rocchini
     
 EN <- stack(listafinale)
 
 cl <- colorRampPalette(c('red','orange','yellow'))(100) #
  cl <- colorRampPalette(c('red','orange','yellow'))(100) # 
 plot(EN, col=cl)
+
+#12 05 2020
+library(raster) #importa file a l interno di...
+setwd("C:/lab/") 
+setwd("C:/lab/esa_NO2")
+rlist <- list.files(pattern=".png")
+listafinale <- lapply(rlist, raster) #applicare LA FUNZIONE raster alla lista finale
+listafinale
+    
+EN <- stack(listafinale) # STACK E una serie di bande insieme a l interno di un immagine. EN e il pachetto
+
+difEN <- EN$EN_0013 - EN$EN_0001
+cld <- colorRampPalette(c('blue','white','red'))(100) # 
+plot(difEN, col=cld)
+plot(EN, col=cl)
+ boxplot(EN)#per avere diagramma
+ 
+ boxplot(EN, horizontal=T)
+ boxplot(EN, horizontal=T,outline=F)
+ 
+ boxplot(EN, horizontal=T,outline=F,axes=T)
+       
+ 
+
+
+ 
+
 
 
 
