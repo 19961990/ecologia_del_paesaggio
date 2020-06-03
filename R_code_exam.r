@@ -542,7 +542,7 @@ plot(difdvilr50, col=cldifdvi)
 
 6 R CODE LANDCOVER
 setwd("C:/lab/") 
-#pacchetto Rstoolbox istallatato prima .C si usa per istallare 2 pachetti diversi ma nello stesso tempo JK
+#pacchetto Rstoolbox istallato prima .C si usa per istallare 2 pachetti diversi ma nello stesso tempo JK
 #pachetto raster richiamato perche già istallato JK
 library(raster)
 library(RStoolbox)
@@ -561,6 +561,16 @@ plot(p224r63_2011c$map, col=clclass)
 #riportando classi legermente differente
 p224r63_2011c <- unsuperClass(p224r63_2011, nClasses=4)
 plot(p224r63_2011c$map)
+ ## $map
+## class : RasterLayer
+## dimensions : 1499, 2967, 4447533 (nrow, ncol, ncell)
+## resolution : 30, 30 (x, y)
+## extent : 579765, 668775, -522705, -477735 (xmin, xmax, ymin, ymax)
+## crs : +proj=utm +zone=22 +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0
+## source : /tmp/RtmpLk7kFO/raster/r_tmp_2020-04-21_120509_19330_40285.grd
+## names : layer
+## values : 1, 4 (min, max)
+
 
 
 7 R CODE MULTITEMP.r
@@ -571,6 +581,7 @@ defor1 <- brick("defor1_.jpg")
 defor2 <- brick("defor2_.jpg")
 #defor 1
 #names defor1_.1,defor1_.2,defor1_.3
+ library(RStoolbox)
 #defor1_.1=NIR
 #defor1_.2=RED
 defor1_.3=GREEN
@@ -579,21 +590,21 @@ plotRGB(defor1, r=1, g=2, b=3, stretch="Lin")
 #exercise della seconda data
 plotRGB(defor2, r=1, g=2, b=3, stretch="Lin")
 par(mfrow=c(2,2))plotRGB(defor1, r=1, g=2, b=3, stretch="Lin")plotRGB(defor2, r=1, g=2, b=3, stretch="Lin")# PAR SERVE PER IL PLOT DI 2 OGGETTI INSIEME
-#CLassificazione non supervisata di defor 1 e 2
+#CLassificazione non supervisionata di defor 1 e 2
 library(RStoolbox) #prima chiamare r stoolbox e poi usare la funzione unsuperclass  JK
 defor1_c <- unsuperClass(defor1, nClasses=2)
 d1c <- unsperClass(defor1, nClasses=2)
 plot(defor1_c$map)
 cl <- colorRampPalette(c('darkblue','blue','light blue'))(100)#ci facciamo un color rampe palette Per visualizzare JK
 plot(defor1_c$map, col=cl)
-#ho ottenuto colori diversi dal prof quindi questa e la possibilita 2  JK
+#ho ottenuto colori diversi dal prof quindi questa è la possibilita 2  JK
 cl <- colorRampPalette(c('green','black'))(100)
 plot(defor1_c$map, col=cl)
 #classificazione defor2
 #exercise classificazione con classi l immagine satellitare di defor2
 defor2_c <- unsuperClass(defor2, nClasses=2)
 plot(defor2_c$map)
-#
+#mappe ottenute
 par(mfrow=c(2,1))
 plot(defor1_c$map, col=cl)
 plot(defor2_c$map, col=cl)
@@ -689,7 +700,10 @@ grafico2 <- ggplot(output, aes(x=cover, y=after, color=cover)) +
 geom_bar(stat="identity", fill="white") +
 ylim(0, 100)
 grid.arrange(grafico1, grafico2, nrow = 1)
-
+# esempio sul significato del $
+# mappageologica <- geomap(im_sat,nClasses=....)
+# plot(mappageologica$lito)
+# plot(mappageologica$lineaments)
 
 
 8 RCODE MULTITEMP NO2
@@ -699,6 +713,7 @@ setwd("C:/lab/")
 EN01 <- raster("EN_0001.png")
 plot(EN01)
 # EXERCISE importare tutte le immagine
+ # EN <- stack(c("EN_0001.png","EN_0002.png","EN_0003.png","EN_0004.png","EN_0005.png","EN_0006.png","EN_0007.png","EN_0008.png","EN_0009.png","EN_0010.png","EN_0011.png","EN_0012.png","EN_0013.png")) importare le immagini tutte insieme  l'una su l' altra con a funzione stack  JK
 EN02 <- raster("EN_0002.png")  
 plot(EN02) 
 EN03 <- raster("EN_0003.png")
@@ -723,6 +738,24 @@ EN012 <- raster("EN_00012.png")
 plot(EN012)
 EN013 <- raster("EN_00013.png")
 plot(EN013)
+# brick
+# EN01 <- brick("EN_0001.png")
+# EN02 <- brick("EN_0002.png")
+# EN03 <- brick("EN_0003.png")
+# EN04 <- brick("EN_0004.png")
+# EN05 <- brick("EN_0005.png")
+# EN06 <- brick("EN_0006.png")
+# EN07 <- brick("EN_0007.png")
+# EN08 <- brick("EN_0008.png")
+# EN09 <- brick("EN_0009.png")
+# EN10 <- brick("EN_0010.png")
+# EN11 <- brick("EN_0011.png")
+# EN12 <- brick("EN_0012.png")
+# EN13 <- brick("EN_0013.png")
+
+# brick
+# writeRaster(EN01[[3]], "snow2000r.tif")
+ 
 #per cambiare colori
  cl <- colorRampPalette(c('red','orange','yellow'))(100) #
     
@@ -735,10 +768,12 @@ plot(EN01, col=cl)
 plot(EN13, col=cl)
 # PER VEDERE DIFFERENZE  JK
 dev.off()
+ # close the window
 difno2 <- EN13 - EN01
 cldif <- colorRampPalette(c('blue','black','yellow'))(100) #
 plot(difno2, col=cldif)
 par(mfrow=c(4,4))
+ # PLOT ALL THE DATA
 plot(EN01, col=cl)
 par(mfrow=c(4,4))
 plot(EN01, col=cl)
@@ -796,14 +831,15 @@ setwd("C:/lab/esa_NO2")
 rlist <- list.files(pattern=".png")
 listafinale <- lapply(rlist, raster) #applicare LA FUNZIONE raster alla lista finale JK
 listafinale
-    
+ # make a stack   
 EN <- stack(listafinale) # STACK è una serie di bande insieme a l interno di un immagine. EN è il pachetto JK
-
+EN <- stack(EN01,EN02,EN03,EN04,EN05,EN06,EN07,EN08,EN09,EN10,EN11,EN12,EN13)
+ 
 difEN <- EN$EN_0013 - EN$EN_0001
 cld <- colorRampPalette(c('blue','white','red'))(100) # 
 plot(difEN, col=cld)
 plot(EN, col=cl)
- boxplot(EN)#per avere diagramma JK
+ boxplot(EN)#per avere diagramma   finale e vedere come variano le cose JK
  
  boxplot(EN, horizontal=T)
  boxplot(EN, horizontal=T,outline=F)
@@ -863,17 +899,30 @@ plot(predicted.snow.2025.norm, col=cl)
 10 R CODE PATCHES.r
 setwd("C:/lab/")
 library(raster) 
+# writeRaster(d1c$map,"d1c.tif")
+# writeRaster(d2c$map,"d2c.tif")
 d1c <- raster("d1c.tif")#caricare la prima mappa,usare la funzione brick per caricare tutte le bande e raster per un solo bando JK
 d2c <- raster("d2c.tif") # land cover 1= agriculture, land cover 2=forest
 par(mfrow=c(1,2))#con par mettiamo più plot a l interno del grafico finale JK
 cl <- colorRampPalette(c('green','black'))(100) #
 plot(d1c,col=cl)
 plot(d2c,col=cl)
-
+cellStats(d1c.forest.patches, max)#number of patches identified
+ 
 par(mfrow=c(1,2))#la mappa coretta perche la foresta è la classe 2 e quella dell algicultura la classe 1 JK
 cl <- colorRampPalette(c('black','green'))(100) #cellStats(d1c.forest.patches, max)#number of patches identified
 plot(d1c,col=cl)
 plot(d2c,col=cl)
+ # Exercise: repeat the whole process for d2c
+# land cover 1= agriculture, land cover 2=forest
+d2c.cat.for <- reclassify(d2c, cbind(1, NA))
+
+d2c.forest.patches <- clump(d2c.cat.for)
+cl <- colorRampPalette(c('dark 
+blue','blue','green','orange','yellow','red'))(100) # 
+plot(d2c.forest.patches,col=cl)
+
+cellStats(d2c.forest.patches, max)#number of patches identified
 #per annullare alcuni valori  si usa Cbind NA attraverso la funzione reclassify JK
 d1c.for <- reclassify(d1c, cbind(1,NA))
 par(mfrow=c(1,2))
@@ -907,7 +956,9 @@ plot(d2c.for.pacthes, col=clp)
 time <- c("Before deforestation","After deforestation")
 npatches <- c(301,1212)
 
-
+# plot results:
+time <- c("Before deforestation","After deforestation")
+npatches <- c(568,1920)
 output <- data.frame(time,npatches)#output per vedere il plot finale JK
 attach(output)
 library(ggplot2)
@@ -915,3 +966,49 @@ ggplot(output, aes(x=time, y=npatches, color="red")) + geom_bar(stat="identity",
 #l altra avevamo visto la variazione dell aria adesso abbiamo visto la variazione dei patch JK
  
 
+##11 R CODE CROP
+setwd("C:/lab/snow/") 
+#caricare tutte le immagini snow con raster o apply   
+#richiamare library raster
+rlist <- list.files(pattern="snow")  #in questo caso non tif
+rlist    
+#save raster into list
+  #con lapply   
+list_rast <- lapply(rlist, raster)
+# uso della funzione stack     
+snow.multitemp <- stack(list_rast) 
+ #plottare tutta le immagine snow     
+  clb <- colorRampPalette(c('dark blue','blue','light blue'))(100) # per plottare le immagini tutti insieme
+plot(snow.multitemp,col=clb)   
+ # fare lo zoom di un certa extensione  
+  snow.multitemp  
+  plot(snow.multitemp$snow2010r, col=clb) 
+    
+extension <- c(6, 18, 40, 50)
+zoom(snow.multitemp$snow2010r, ext=extension)
+    
+extension <- c(6, 18, 35, 50)
+zoom(snow.multitemp$snow2010r, ext=extension)
+extension <- c(6, 20, 35, 50)
+zoom(snow.multitemp$snow2010r, ext=extension)
+#disegnare l'estensione con draw extend()
+#lanciare prima lo plot dell'immagine originale poi disegnare un rettangolino su l'estenzione JK
+plot(snow.multitemp$snow2010r, col=clb)
+ zoom(snow.multitemp$snow2010r, ext=drawExtent())
+ zoom(snow.multitemp$snow2010r, ext=drawExtent())
+ plot(snow.multitemp$snow2010r, col=clb)
+ zoom(snow.multitemp$snow2010r, ext=drawExtent())
+ 
+#fare un crop che taglia l'immagine sulla zona che vogliamo ritagliare
+extension <- c(6, 20, 35, 50)
+snow2010r.italy <- crop(snow.multitemp$snow2010r, extension)
+plot(snow2010r.italy, col=clb)    
+ #exercice  crop the italy extend to whole stack back of snow   
+ snow.multitemp.italy <- crop(snow.multitemp, extension)
+ plot(snow.multitemp.italy, col=clb)
+plot(snow.multitemp.italy, col=clb, zlim=c(20,200)) #zlimp serve per limitare la legenda per tutte le immagini JK
+     
+#boxplot o previsione con la funzione prediction  #permette di prendere i valori delle immagini per vedere come varia la neve esattamente durante gli anni JK
+boxplot(snow.multitemp.italy, horizontal=T,outline=F)
+     
+     
