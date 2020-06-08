@@ -1012,3 +1012,58 @@ plot(snow.multitemp.italy, col=clb, zlim=c(20,200)) #zlimp serve per limitare la
 boxplot(snow.multitemp.italy, horizontal=T,outline=F)
      
      
+
+#12 SPECIES Distribution MODELING     
+ #non acciamo il setw perche usiamo il paccheto sdm    
+install.packages("sdm") 
+ library(raster)
+library(rgdal)    
+ #carichiamo il file a l interno di rgdal 
+ system.file("external/species.shp", package="sdm") 
+system.file("external/species.shp", package="sdm")
+[1] "C:/Users/HP/Documents/R/win     
+ species <- shapefile(file)    
+plot(species)
+#visualizzare le presenze dalle assenze
+plot(species[species$Occurrence == 1,],col='blue',pch=16) per punti uguale a 1 colorati in blu poi aggiungiamo plot uguaali a 0 colorato in rosso    
+points(species[species$Occurrence == 0,],col='red',pch=16) i punti dove la specie e assente  
+ 
+path <- system.file("external", package="sdm") 
+
+lst <- list.files(path=path,pattern='asc$',full.names = T) #
+ preds <- stack(lst)
+ 
+cl <- colorRampPalette(c('yellow','orange','red')) (100)
+ cl <- colorRampPalette(c('blue','orange','red','yellow')) (100)
+plot(preds, col=cl)
+plot(preds$elevation, col=cl)
+ #tutti i punti dove la specie e presente ? quindi sta bene in bassa elevation
+points(species[species$Occurrence == 1,], pch=16)
+# con la temperatura vegiamo come si comporta ?qui li piaciono temperature medio basse o basse
+plot(preds$temperature, col=cl)
+points(species[species$Occurrence == 1,], pch=16)
+per le precipitazione come si comporta? e intermedia quindi
+plot(preds$precipitation, col=cl)
+points(species[species$Occurrence == 1,], pch=16)
+#indice di vegetazione
+plot della nostra vegetazione con nostro punto a l interno
+plot(preds$vegetation, col=cl)
+points(species[species$Occurrence == 1,], pch=16)
+#model
+dati <- sdmData(train=species, predictors=preds)
+m1 <- sdm(Occurrence ~ elevation + precipitation + temperature + vegetation, data=d, methods='glm')
+p1 <- predict(m1, newdata=preds)
+plot(p1, col=cl)
+points(species[species$Occurrence == 1,], pch=16)
+#EXAM PROJECT
+
+
+
+
+
+
+ 
+    
+     
+     
+     
