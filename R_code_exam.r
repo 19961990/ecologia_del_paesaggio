@@ -1,36 +1,43 @@
 #R  code exams
 ### 1 R CODE PRIMO.r
 #primo codice in R
-install.packages("sp") # require(sp) è un altro comando per far partire le librerie
-library(sp)
-data(meuse)
+install.packages("sp")# facciamo dialogare R con l'esterno , il pachetto sp svillupa funzione  per dati spaziali JK
+# require(sp)è un altro comando per far partire le librerie JK
+library(sp) #relazionati a dati spaziali  .()  si usa perche R richiede spiegazioni dell'argomento JK
+data(meuse) #data è il datum, meuse è il dataset a l'intrno del paccheto sp
 data(meuse)
 meuse
-head(meuse)# head per vedere la tabelle di meuse
-names(meuse)
-summary(meuse)
-pairs(meuse)
+head(meuse)# head per vedere la tabelle di meuse.head permette di vedere un set, le 6 prime righe JK
+names(meuse)# names permette di vedere  i nomi delle variabili a l'interno del set JK
+summary(meuse)# fornisce la possibilità di fare un sommario del dataset JK
+pairs(meuse) # la funzione pairs mostra un grafico con tutte le variabili sulla diagonale del grafico e vari plot che che vediamo sono le correlazione in modogafico tra le varie variabili JK
+#la funzione pairs con cadmio rame  e piombo JK
 pairs(~ cadmium + copper + lead , data = meuse)
 
-# Exercie: cadmium copper lead zinc
-
-pairs(meuse[,3:6])
-
-pairs(meuse[,3:6], col="red")
-
-pairs(meuse[,3:6], col="red", pch=19)
-
+# Exercise: ripetere la funzione pairs appena fatta aggiungendo oltre a tutti gli altri elementi il zinco 
+pairs(~ cadmium + copper +lead +zinc , data = meuse)
+#metodo per fare il subset di un database in R si chiama dataframe veloce selezionando alcuni variabili,la funzione pairs è stata riscritta mettiamo il data set meuse e quali colonne ci interessa JK
+#con a funzione names il cadmio il rame e il piombo  e lo zinco erano alla terza quarta e quinta e sesta variabili quindi si fa un meuse da 3 a 6 JK
+pairs(meuse[,3:6]) #si mettono le funzioni dentro la parentesi tonda JK
+# cambiamento coloridei punti JK
+pairs(meuse[,3:6], col="red")# a funzione col si usa per colore. red si mette tra "" perche è un etichetta JK
+#cambiare il charattere dei punti a l'interno del grafico JK
+pairs(meuse[,3:6], col="red", pch=19)#[] indica il subset, pch è il point character JK
+#per cambiare  il carattere , chiudere,aprire. JK
+#su google si scrive pch e nelle immagini ci sono serie di carattere dove si può scegliere il codice che vogliamo usare in questo caso per chiudere il cerchio si è usato il 19 JK
 pairs(meuse[,3:6], col="red", pch=19, cex=3)
-
+#per aumentare la dimensione o ridurre  i point caracter  si usa  caracter exageration cex JK
+#se cex=1 rimane uguale, se cex=2 2 volte più grande,se cex=0,1 riduzione di metà JK
+#mettiamo un titolo con la funzione main il titolo si chiama primo pairs JK
 pairs(meuse[,3:6], col="red", pch=19, cex=3, main="Primo pairs")
 
 # Exercise: do the same for the relationship between elevation and the elements
+#ripetere il pairs precedente aggiungendo anche l'elevazione
+pairs(meuse[,3:7], col="red", pch=19, cex=3, main="Primo pairs",elev)
 
-pairs(meuse[,3:7], col="red", pch=19, cex=3, main="Primo pairs")
-
---------
+#con comando source andiamo a prendere un patch di coordinate a l'esterno
 # panels from outside
-
+#il nome panel.correlation si usa  in R,serve per qualsiasi variabile x,y JK
 # panel.correlations <- function(x, y, digits=1, prefix="", cex.cor)
 # {
 #     usr <- par("usr"); on.exit(par(usr))
@@ -43,7 +50,7 @@ pairs(meuse[,3:7], col="red", pch=19, cex=3, main="Primo pairs")
 #     if(missing(cex.cor)) cex <- 0.9/strwidth(txt)
 #     text(0.5, 0.5, txt, cex = cex * r)
 # }
-# 
+# panel smoothing è un plot di punti con un certo pch e con lois un smoother 
 # panel.smoothing <- function (x, y, col = par("col"), bg = NA, pch = par("pch"),
 #     cex = 1, col.smooth = "red", span = 2/3, iter = 3, ...)
 # {
@@ -53,7 +60,7 @@ pairs(meuse[,3:7], col="red", pch=19, cex=3, main="Primo pairs")
 #         lines(stats::lowess(x[ok], y[ok], f = span, iter = iter),
 #             col = 1, ...)
 # }
-
+#la funzione
 # panel.histograms <- function(x, ...)
 # {
 #   usr <- par("usr"); on.exit(par(usr))
@@ -78,10 +85,11 @@ plot(meuse$cadmium,meuse$copper)
 attach(meuse)
 
 plot(cadmium,copper) 
-
+#per cambiare il tipo di cattere si usa pch=17 pe triangolini  JK
 plot(cadmium, copper, pch=17, col="green", main="primo plot")
-
+#cambiare labels del grafico prima erano cadmium e copper,l'argomento per cambiare la funzione è xlab e ylab JK
 plot(cadmium, copper, pch=17, col="green", main="primo plot", xlab="cadmio", ylab="rame") 
+#cambiare la grandezza delle etichette possiamo usare cex.lab ,dimensione dei labels a l'interno del grafico cex= JK
 plot(cadmium, copper, pch=17, col="green", main="primo plot", xlab="cadmio", ylab="rame", cex.lab=2, cex=2) 
 
 
@@ -96,7 +104,7 @@ data(meuse)
 #alleghiamo il data frame    JK
 attach(meuse)
 plot(cadmium,lead,col="red",pch=19,cex=2)
-#exercise plot di copper  e zinco con simbolo triangolo 17 e colore verde
+#exercise plot di copper  e zinco con simbolo triangolo  codice 17 e colore verde
 plot(copper,zinc,col="green",pch=17,cex=2)
 #cambiare le etichette  JK
 plot(copper,zinc,col="green",pch=17,cex=2,xlab="rame",ylab="zinco")
@@ -110,8 +118,8 @@ plot(cadmium,lead,col="red",pch=19,cex=2)
 plot(copper,zinc,col="green",pch=17,cex=2)
 
 #multigrame automatico   
-install.packages("GGally")
-library(GGaly)
+install.packages("GGally") #
+library(GGaly) #
 ggpairs(meuse[3:6])
 #spatial
 head(meuse)
