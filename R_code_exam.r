@@ -112,29 +112,33 @@ plot(copper,zinc,col="green",pch=17,cex=2,xlab="rame",ylab="zinco")
 par(mfrow=c( 1,2))
 plot(cadmium,lead,col="red",pch=19,cex=2)
 plot(copper,zinc,col="green",pch=17,cex=2)
-#invertiamo grafici rigga/colonna colonna rigga  
+#invertiamo grafici rigga/colonna colonna rigga
+#davvanti a serie di numeri e caratteri si usa la c in R(numero di righe,numero di colonne)JK
+#è stato creato un multipanel con la funzione  par,fatto da une righa e 2 colonne ,in queste 2 colonne abbiamo inserito un plot del cadmio e piombo e nela seconda righa un plot di rame e sinco JK
 par(mfrow=c( 2,1))
 plot(cadmium,lead,col="red",pch=19,cex=2)
 plot(copper,zinc,col="green",pch=17,cex=2)
 
 #multigrame automatico   
-install.packages("GGally") #
+install.packages("GGally") #estensione di ggplot2
 library(GGaly) #
 ggpairs(meuse[3:6])
 #spatial
-head(meuse)
-
-coordinates (meuse)=~x+y
+head(meuse)#il dataset è meuse
+#se spieghiamo al software che abbiamo bisogno di utilizzare le coordinate JK
+#in R dataset si chiama dataframe
+#con coordinates si piegha al software dove sono le coordinate x e y per fare questa operazione a l'interno del dataset meuse ci ricordiamo che c'è una colonna con xy JK
+coordinates (meuse)=~x+y # la tilde si usa per raggruppare un gruppo di colonne JK
 #funzione per plotare dati spaziali
 plot(meuse)
 #funzione spplot per plottare i dati spazialmente 
-spplot(meuse,"zinc")
+spplot(meuse,"zinc") #èuna funzione dentro la libreria sp, e serve a plottare i dati JK
 
 3 R CODE SPATIAL 2.r
 #####Rspatial
 
 install.packages ("sp")
-##libreria sp
+## si richiama libreria sp se stato istallato prima
 library (sp)
 #dati da usare
 data(meuse)
@@ -144,41 +148,50 @@ coordinates(meuse)=~x+y
 #spplot dei dati di zinco
 spplot(meuse,"zinc")
 #  exercice spplot dei dati di rame
-head(meuse)
-#un altra possibilita per vedere i nomi delle colonne  JK
-names(meuse)
+head(meuse) # con head si da un occhiata al dataseted è la prima parte del database cioè le 6 prime righe JK
+#un altra possibilita per vedere i nomi delle colonne  JK 
+names(meuse) #funzione names permette di vedere i nomi JK
 spplot(meuse,"copper")
 
-#bubble
-bubble(meuse,"zinc")
+#bubble è una funzione del pacchetto sp,è come spplotcioè un modo per plottare i dati e permette di avere grafici più carini JK
+bubble(meuse,"zinc")# meuse il dataset di sp e zinco la variabile ed è dichiarato con le ""
 #exercise bubble del rame colorato rosso
-bubble(meuse,"copper",col="red")
+bubble(meuse,"copper",col="red")#red è una stringa di testo per questo è tra ""
 
-#foraminiferi(sofia) carbon capture(marco)  
-#array
-foram <- c(10, 20, 35, 55, 67, 80)
-carbon <- c(5, 15, 30, 70, 85, 99)
-plot(foram,carbon,col="green",cex=2,pch=19)
-#dati dall esterno sul covid 19   JK
-#cartella da creare su windows c:/lab  JK
-
-setwd("C:/lab")
+#amettiamo che Sofia a da campionare i foraminiferi a terra in varie zone (6) e amettiamo che un certo plot abbiamo  misurato la quantità di foraminiferida 0 a 100
+#quindi nel primo sarà 10 foraminiferi,nel secondo 20,nel terzo 35,nel quarto 50.nel quinto 67,nel sesto 80 in R.JK
+#foraminiferi(sofia) carbon capture(marco) , sono i nostri dataset JK 
+#si scrive array
+#si crea in R un oggetto
+foram <- c(10, 20, 35, 55, 67, 80) #c davvanti a serie di numeri JK
+carbon <- c(5, 15, 30, 70, 85, 99) # <- verso foraminiferi permette di nominarelo JK
+#il plot ci permette di cambiare colore e quindi usiamo la funzione col JK
+plot(foram,carbon,col="green",cex=2,pch=19)#col per colore,la dimensione è cex e pch point caracter JK
+#l'esercizio serve per creare  2 oggetti la colonna foram e carbon per plottarle insieme,poi si crea un oggetto basandosi sulla tabella su didattia online JK
+#dati dall esterno sul covid 19   
+#spieghiamo al software qual'è la cartella che utilizzeremo da cui in avanti a l'interno del computer JK
+#cartella da creare su windows ("c:/lab")  
+#indicare al software quale cartella dobbiamo usare.per usare o settare la cartella giusta useremo il comando set  e la cartella del lavoro è working directory
+setwd("C:/lab")#usiamo la stringa di testo per spiegare al software quale percorso useremo per fare questo mettiamole ""
 covid <- read.table("covid_agg.csv",head=TRUE)
 #leggere la tabella    
 head(covid)# lo abbiamo fatto direttamente su R JK
 covid
-covid <- read.table("covid_agg.csv",head=TRUE)
+covid <- read.table("covid_agg.csv",head=TRUE) #read,table per leggere la le tabelle,covid_agg.csv è il file
+#si crea una cartella chiamata Lab dove mettiamo tutto quello che carichiamo nel mputer e con quale lavoreremo nel corso JK
+#spieghiamo in R che abbiamo un header e mettiamo head. TRUE si scrive sempre in maiuscolo JK
+#si associano funzioni a un nome a la nostra tabella ,per fare questo andiamo a l'inizio del nostro codice JK
+#covid_agg.csv è tra "" perche si va a l'estero del software
 
 
 
 4 R CODE POINT PATTERN
 #CODICE PER ANALISI  DEI POINT PATTERNS
-install.packages("ggplot2")# comando alternativo require(ggplot2)
+install.packages("ggplot2")# comando alternativo require(ggplot2),mpg è uno dei dataset del pacchetto ggplot 2 JK
 install.packages("spatstat")
-library("ggplot2")#comando alternativo require ggplot per chiamare la funzione   JK
+library("ggplot2")
 library("spatstat")
-
-setwd("C:/lab")
+setwd("C:/lab") #
 #importare i dati  
 covid <- read.table("covid_agg.csv",head=TRUE)
 head(covid)
@@ -192,32 +205,47 @@ plot(covid$country,covid$cases,las=3,cex.lab=0.5,cex.axis=0.5) # vertical labels
 data(mpg)
 head(mpg)
 
+install(ggplot)
+library(ggplot)
 #data
-#aes
-#tipo di geometria
-ggplot(mpg,aes(x=displ,y=hwy)) + geom_point() #per i punti JK
+#aes, aestetiscs sono variabili ,servono per visualizzare JK
+#per il tipo di geometria che vogliamo usare  si usa geom.()+
+ggplot(mpg,aes(x=displ,y=hwy)) + geom_point() #per i punti, hwy sono variabili numeriche presi a caso JK
 ggplot(mpg,aes(x=displ,y=hwy)) + geom_line() #per le linee  JK
 ggplot(mpg,aes(x=displ,y=hwy)) + geom_polygon() #per poligoni JK
-#ggplot per visualizzare la distribuzione spaziale del covid
-ggplot(covid,aes(x=lon,y=lat,size=cases)) + geom_point()#grandezza dei punti o paesi size uguale a colona  chi est cases JK
-#density
+#per cambiare il tipo di geometria
+#esempio applichiamo il ggplot per visualizzare questa distribuzione spaziale  del covid,il dataset è covid
+#ggplot per visualizzare la distribuzione spaziale del covid,names permette di vedere dati di covid
+#per cambiare versione di cases  la lattitudine y e la longitudine x di punti lo andiamo a cambiare in funzione  del numero di casi JK
+#inseriamo la variazione della grandezza dei punti in funzione di numero di casi che c'è per ogni punto che corrisponde a un paese JK
+#come geometria geom.point e si mette dentro R
+ggplot(covid,aes(x=lon,y=lat,size=cases)) + geom_point()#grandezza dei punti o paesi  si indica con size ,cases sono le colonne JK
+#esercizio sul point pattern analisi
+#misura della densità del covid nel mondo
 #create dataset for spatstat
-attach(covid) #dataset originali JK
-covidsppp<-(lon,lat,c(-180,180),c(-90,90))
- 
+install(spatstat)# si usa per fare meglio una mappa di densità
+library(spatstat) #per richiamare spatstat
+#spieghiamo al software che vogliamo usare un point pattern a l'interno di spatsat e usiamo la funzione ppp JK
+#bisogna inserire le coordinate x,y e il rangedentro al dataset -180 a +180 long e -90 a 90 latt
+covidsppp<-(lon,lat,c(-180,180),c(-90,90))# c serve....
+ #prima di lanciare la funzione facciamo attach
+attach(covid) # covid è il dataset originali JK
+library(spatstat)
 d<- density(covids)
-plot(d)
-points(covids)
+plot(d) # d la densità
+points(covids)#covids è il nuovo dataset che useremo per la parte spaziale della densità JK
 
-> ppp(x.coordinates,y.coordinates,x.range,y.range)
-
+> ppp(x.coordinates,y.coordinates,x.range,y.range) #ppp è una funzione,è il dataset for spatstat. JK
+#plot della densità
 plot(d)
+#per inserire  anche i punti sopra al plot precedente senza cancellarlo rifacendo un altro plot possiamo scrivere un altro funzione  che si chiama points JK
+#plottare i punti 
 points(covids,pch=19,cex=0.5) #pch point character
-
+#aggiungere i nomi dei vari paesi,sono sopra la mappa di densità
 #SAVE the Rdata
 setwd("C:/lab")
 load("point_pattern.RData") # inserire l'RData nominato ieri JK
-ls()
+ls() #list
 library(spatstat)
 plot(d)
 
