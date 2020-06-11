@@ -138,7 +138,7 @@ spplot(meuse,"zinc") #èuna funzione dentro la libreria sp, e serve a plottare i
 #####Rspatial
 
 install.packages ("sp")
-## si richiama libreria sp se stato istallato prima
+## si richiama libreria sp è stato istallato prima
 library (sp)
 #dati da usare
 data(meuse)
@@ -187,6 +187,7 @@ covid <- read.table("covid_agg.csv",head=TRUE) #read,table per leggere la le tab
 
 4 R CODE POINT PATTERN
 #CODICE PER ANALISI  DEI POINT PATTERNS
+l'analisi del point pattern permette di stimare i valori che non possiamo misurare
 install.packages("ggplot2")# comando alternativo require(ggplot2),mpg è uno dei dataset del pacchetto ggplot 2 JK
 install.packages("spatstat")
 library("ggplot2")
@@ -383,21 +384,22 @@ points(Tesippp,col="green")
 
 
 5 R  CODE TELERIL.r
+#si è carica il zip da iol e si mette nella cartella lab    
 #codice R per analisi immagini satellitari
 #packages raster
 install.packages("raster")
 library (raster)
-# setwd("C:/lab/")
-p224r63 <- brick("p224r63_2011_masked.grd")
-p224r63_2011 <- brick("p224r63_2011_masked.grd") o plot( p224r63) per plottare l imagine sul grafico  JK
+setwd("C:/lab/")
+#è previsto il codice brick    
+p224r63 <- brick("p224r63_2011_masked.grd")#brick serve a importare immagini satellitare completamente in tutte le bande a l'interno di R JK
+p224r63_2011 <- brick("p224r63_2011_masked.grd") o plot( p224r63) #per plottare l imagine sul grafico  JK
 
 pairs(p224r63_2011m) # time consuming
 
-    load("teleril")
-    ls()
+ load("teleril")
+ ls()
 p224r63_2011 <- p224r63
-library (raster)
-
+library (raster)# richiamare raster JK
 # plotRGB
 # B1: blue
 # B2: green
@@ -416,29 +418,30 @@ cllow <- colorRampPalette(c('black','grey','light grey'))(5) #
 #names(p224r63_2011) {1}"B1_sre"B2_sre""B3_sre"B4_sre"B5_sre"B6_bt""B7_sre"
 clb <- colorRampPalette(c('dark blue','blue','light blue'))(100) #
 plot(
- #attach(dataframe)
- plot(p224r63_2011$B1_sre)
-  plot(p224r63_2011$B1_sre, col=clb)
-  #attach(dataframe)non funziona con il pachetto raster 
-  #simbolo che lega la colonna(la banda al dataset(immagine satellitare: $)  
+#attach(dataframe)
+plot(p224r63_2011$B1_sre) #sre è il nome
+plot(p224r63_2011$B1_sre, col=clb) #$ permette di collegare vari pezzi di oggetto,lo avevamo usato per collegare le clonne a loro dataset o le bande a loro dataset cioè a l'immagine JK
+#attach(dataframe)non funziona con il pachetto raster 
+#simbolo che lega la colonna(la banda al dataset(immagine satellitare: $) JK 
   
-  #esercizio plottare la banda del l infrarosso vicino con 
-  #colorrampalette che varia dal rosso all arancione al giallo #
-  clnir <- colorRampPalette(c('red','orange','yellow'))(100) #
+#esercizio: plottare la banda del l infrarosso vicino con 
+ 
+#colorrampalette che varia dal rosso all arancione al giallo #
+clnir <- colorRampPalette(c('red','orange','yellow'))(100) #
 plot(p224r63_2011$B4_sre, col=clnir)
-  #  multiframe di 4 bando 4 bands
-  # blue
+#  multiframe di 4 bando 4 bands
+# blue
 clb <- colorRampPalette(c('dark blue','blue','light blue'))(100) # 
 plot(p224r63_2011$B1_sre, col=clb)
-  par(mfrow=c(2,2))
-  # green
+par(mfrow=c(2,2))
+# green
 clg <- colorRampPalette(c('dark green','green','light green'))(100) # 
 plot(p224r63_2011$B2_sre, col=clg)
- # red
-  clr <- colorRampPalette(c('dark red','red','light red'))(100) # 
+# red
+clr <- colorRampPalette(c('dark red','red','light red'))(100) # 
 plot(p224r63_2011$B3_sre, col=clr)
- # nir  
-  clnir <- colorRampPalette(c('red','orange','yellow'))(100) #
+# nir  
+clnir <- colorRampPalette(c('red','orange','yellow'))(100) #
 plot(p224r63_2011$B4_sre, col=clnir) 
 #per chiudere i  GRAFICI . dev.off() jk
 
@@ -524,55 +527,62 @@ dev.off()
 #spectral indices 
 # dvi1988 = nir1988-red1988
 # per collegare data set a l immagine ,<- per ridurre un ogetto a un altro cosi senza parantesi dopo, sre è il sensore JK
+#exercise:plot dvi 1988
 dvi1988 <- p224r63_2011$B4_sre-p224r63_2011$B3_sre
-plot(dvi1988)
-#exercicce calculate dvi for 2011
+plot(dvi1988)#plot serve per plottare
+#exercice calculate dvi for 2011
 dvi2011 <- p224r63_2011$B4_sre-p224r63_2011$B3_sre #sre significa  difference vegetationion index JK
-plot(dvi2011)
+plot(dvi2011)#dvi legata alla vegetazione
 #esempio palette di  colore del dvi
 cldvi <- colorRampPalette(c('light blue','light green','green'))(100) # 
 plot(dvi2011, col=cldvi)
 # multitemporal analysis
 #analisi multitemporale   per mostrare vegetazioni che hanno subito più o meno stress  JK 
-difdvi <- dvi2011 - dvi1988
+difdvi <- dvi2011 - dvi1988 #difdvi è la differenza nell'indice di rilevazione JK
 plot(difdvi)    
-cldifdvi <- colorRampPalette(c('red','white','blue'))(100) # col è color rampe palette JK
+cldifdvi <- colorRampPalette(c('red','white','blue'))(100) # col è la funzione per colore, cl è la color rampe palette,red per valori bassi e blue per valori alti JK
 plot(difdvi, col=cldifdvi) 
 #visualize the output
-#multiframe 1998rgb,2011 rgb,difdiv
-par(mfrow=c(3,1))
+#multiframe 1998rgb,2011 rgb,difdiv rgb significa red green blue
+par(mfrow=c(3,1)) #par per vedere tutte le immagini insieme, 3.1 si usa per incollare l'immagine di 1998,2011,e la differenza di vegetazione nel tempo JK
 plotRGB(p224r63_1988, r=4, g=3, b=2, stretch="Lin")
 plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
 plot(difdvi, col=cldifdvi)  
 dev.off()   
-#modificare la grana o resoluzione con aggregate JK
-p224r63_2011lr <- aggregate(p224r63_2011, fact=10) #lr significa low resolution, fact o fattore è l argomento o il pixel JK
+#modificare la grana o resoluzione con  con la funzione aggregate JK
+#cominciamo con l'immagine del 2011
+p224r63_2011lr <- aggregate(p224r63_2011, fact=10) #lr significa low resolution, fact o fattore ,quanto lo vogliamo cambiare o il pixel JK
 p224r63_2011
 p224r63_2011lr
-par(mfrow=c(2,1))
+par(mfrow=c(2,1)) #plottiamo 2 immagini
 plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
 plotRGB(p224r63_2011lr, r=4, g=3, b=2, stretch="Lin")
 #lower resolution
-p224r63_2011lr50 <- aggregate(p224r63_2011, fact=50) 
+p224r63_2011lr50 <- aggregate(p224r63_2011, fact=50) #50 volte il pixel
 p224r63_2011lr50    
 #original 30m risampled  a 1500m JK
-par(mfrow=c(3,1))
+par(mfrow=c(3,1)) #plottiamo diverse immagini
 plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
 plotRGB(p224r63_2011lr, r=4, g=3, b=2, stretch="Lin")
 plotRGB(p224r63_2011lr50, r=4, g=3, b=2, stretch="Lin")    
-    
+# immagine 2011 con bassa risoluzione JK    
 dvi2011lr50 <- p224r63_2011lr50$B4_sre - p224r63_2011lr50$B3_sre 
- dev.off()
- # immagine 1988 con bassa resoluzione JK
-plot(dvi2011lr50) 
- p224r63_1988lr50 <- aggregate(p224r63_1988, fact=50)  
+dev.off()
+#diminuire la risoluzione
+# immagine 1988 con bassa risoluzione JK
+p224r63_1988lr50 <- aggregate(p224r63_1988, fact=50)
+#indice di vegetazione di 1988 a bassa resoluzione
 dvi1988lr50 <- p224r63_1988lr50$B4_sre - p224r63_1988lr50$B3_sre 
- #differenza dei 2 indici di vegetazione   DI 2011 ler del 1988 lr 50
+ #differenza dei 2 indici di vegetazione   Di 2011 e del 1988 lr 50 a meno resoluzione
  difdvilr50 <- dvi2011lr50 - dvi1988lr50
- #multiframe con 2 dati finali per avere la grana giusta con quella a alta e bassa risoluzione JK
+ 
+#abbiamo fatto la differenza dei div  bassa risoluzione  e lo possiamo plottare usando la color rampe palette di prima JK 
+cldifdvi <- colorRampPalette(c('red','white','blue'))(100) # col è color rampe palette JK
+plot(difdvi, col=cldifdvi)  
+#multiframe con 2 dati ottenuta per avere la grana giusta con quella ad alta e bassa risoluzione JK
  par(mfrow=c(2,1))
-plot(difdvi, col=cldifdvi)
-plot(difdvilr50, col=cldifdvi)
+plot(difdvi, col=cldifdvi) #dvi a risoluzione originale
+plot(difdvilr50, col=cldifdvi)  #dvi a risoluzione bassa
 
 
 
@@ -582,20 +592,24 @@ setwd("C:/lab/")
 #pachetto raster richiamato perche già istallato JK
 library(raster)
 library(RStoolbox)
-p224r63_2011 <- brick("p224r63_2011_masked.grd")
+p224r63_2011 <- brick("p224r63_2011_masked.grd") #brick serve a importare un immagine satellitare JK
 #LANDSat bands 1b,2g,3r,4nir
 
-#RGB
-plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")#plot con le componente red,green,blu JK
 #classificazione con unsuperclass
+#class si scrive con la C maiuscula
+#spieghiamo al software l'immagine di cui parliamo e il numero di classi
+#uniamo la mappa a nostro modello p224r63
 p224r63_2011c <- unsuperClass(p224r63_2011, nClasses=4)
 plot(p224r63_2011c$map)
 #stabilire la legenda con color rampe palette
 clclass <- colorRampPalette(c('red', 'green', 'blue', 'black'))(100) 
 plot(p224r63_2011c$map, col=clclass)
-#in funzione del numero di classi aumenta l incertezza del algoritmo  automatico 
+#dfinizione di classi aumenta l incertezza del'algoritmo  automatico di classificazione
 #riportando classi legermente differente
+ 
 p224r63_2011c <- unsuperClass(p224r63_2011, nClasses=4)
+ 
 plot(p224r63_2011c$map)
  ## $map
 ## class : RasterLayer
