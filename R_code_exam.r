@@ -271,30 +271,47 @@ plot(coastlines, col="blue", add=T)
 cl <- colorRampPalette(c('red','orange','yellow','green', 'blue'))(100)
 plot(coastlines, col="yellow", add=T)
 
-#EXERCISE CARicare il worksace point patten Rdata (load(",.,") e creare un garfico della mappa di densità
+#point pattern analisi:trasformare i punti delle mappe continui legati a punti di interpolazione
+#EXERCISE caricare il workspace point patten.Rdata  ricorda che la funzione era (load(",.,") e creare un garfico della mappa di densità di punti che già esiste
+#istallare il pacchetto spatstat e chiamare la libreria rgdal
 library(spatstat)
 library(rgdal) # for the coastlines
-
 setwd("C:/lab")
+#inserire tutti i dati che abbiamo salvato tra cui c'è d,plottare la densità usado il colorRampe palette.poi si rinomina il nome density in main JK
 load("point_pattern.RData") #per aggiungere punti si usa points pattern  JK
-ls()
-
+ls() #per vedere la lista
+#point pattern non aveva ancora salvato le coastlines  quindi qui c'è una bifurcazione 
 cl5 <- colorRampPalette(c('cyan', 'purple', 'red')) (200) # color rampe palette stabilisce la legenda
 plot(d, col=cl5, main="density")
+#aggiunto al precedente plot punti con points con covids come point pattern creato con la funzione ppp
 points(covids)
-coastlines <- readOGR("ne_10m_coastline.shp")
-plot(coastlines, add=T)
-
-
-#interpolazione
-head(covid) #per vedere la tabella di covid  JK
-view(covid) #per vedere tutti i paesi  JK
+coastlines <- readOGR("ne_10m_coastline.shp")#readOGR serve per leggere questo file dove c'è coastline e per usarlo bisogna avere istallato la libreria rgdal. JK
+plot(coastlines, add=T)#   
+#andiamo a veder la densità dei paesi che hanno avuto il covid uno accanto a l'altro con l'interpolazione
+#interpolazione va stimare i valori nelle zone dove non è stato fatto campione
+#spieghiamo al sistema qual'è la variabile che vogliamo interpollare  quindi prima dobbiamo guadare i valori dei casi al'interno della tabella covid JK
+head(covid) #per guardare la tabella di covid  per vedere la colonna cases JK
+view(covid) o covid #per vedere tutta la tabella creare dei valori di interpollazione  JK
+#marks o voto son delle etichette per ogni paese JK
+#spieghiamo alla libreria spatstat che andiamo a pescare dei valori dentro cases con la funzione marks JK
+#spieghiamo alla libreria che ci sono valori che vogliamo interpollare nel point pattern,lo asociamo a cases a l'interno di covids
 marks(covids) <- covid$cases  # marks per pescare i valori dentro alla colonna che ci interessa  JK
 library(spatstat) #a l interno ci sono valori che vogliamo interpolare
-marks(covids) <- covid$cases
-s <- Smooth(covids) #significa mappa continua dei covid punti sulla base dei casi di covid JK
+marks(covids) <- covid$cases #si può usare il $ o attach
+#applichiamo la funzione Smooth(con la maiuscula) che mi da la mappa continua dei vari punti di covid
+s <- Smooth(covids) # smooth significa mappa continua dei covid punti sulla base dei casi di covid , s è per la stima dei valori attraverso smooth JK
+#plottare la mappa dei casi JK
 plot(s) #smooth è s e significa mappa continua dei covid punti sulla base dei casi JK
-#exercice plot(S) with points and coastlines
+
+#exercice plot(S) fare un plot(s) cambiando la palette e aggiungendo i punti coastlines il titolo main
+
+#la mappa si chiama interpol e lo associamo con  <- alla funzione smooth sul nostro point pattern e si incolla su R
+plot(dT, main="Density of points")
+points(Tesippp,col="green")
+
+plot(interpol, main="Estimate of species richness")
+points(Tesippp,col="green") 
+
 cl5 <- colorRampPalette(c('cyan', 'purple', 'red')) (200) 
 plot(s, col=cl5, main="density")
 points(covids)
@@ -337,7 +354,6 @@ Tesippp <- ppp(Longitude, Latitude, c(12.41,12.47), c(43.9,43.95))
 dT <- density(Tesippp)
 dev.off()
 plot(dT)
-plot(dT)
 points(Tesippp, col="green")
  
 ######
@@ -358,23 +374,18 @@ interpol <- Smooth(Tesippp)
 plot(interpol)
 points(Tesippp, col="green")
 library(rgdal)#  RGDAL PER APRIRE QUALSIASI FILE VECTORIALE JK
+#associamo al nome san marino la funzione read OGR
 sanmarino <-  readOGR("San_Marino.shp")
 # plot POLIGONO JK
 plot(sanmarino)
-plot(interpol, main="Species richness", add=T)
+plot(interpol, main="Species richness", add=2) #così si aggiungono pezzi alla mappa precedente
 points(Tesippp,col="green")
-plot(sanmarino, add=T)
+#per avere la mappa dei punti,per plottare sopra la mappa precedente
+plot(sanmarino, add=2)#è la mappa finale
+#per aggiungere coordinate si aggiunge la funzione ggplot
 
-#EXERCISE PLOT MULTIFRAME DI DENSITA  E INTERPOLAZIONE 
-par(mfrow=c(2,1)
-plot(dT, main="Density of points")
-points(Tesippp,col="green")
-
-plot(interpol, main="Estimate of species richness")
-points(Tesippp,col="green")
-
- #esercizio   
-par(mfrow=c(1,2)) 
+ #esercizio  multiframe della densitàe della e dell'interpolazione 
+par(mfrow=c(1,2)) #plottiamo tutte le 2 mappe dello stesso grafico con la funzione par così abbiamo 2 righe ,1 colonna
 
 plot(dT, main="Density of points")
 points(Tesippp,col="green")
@@ -528,51 +539,70 @@ dev.off()
 # dvi1988 = nir1988-red1988
 # per collegare data set a l immagine ,<- per ridurre un ogetto a un altro cosi senza parantesi dopo, sre è il sensore JK
 #exercise:plot dvi 1988
-dvi1988 <- p224r63_2011$B4_sre-p224r63_2011$B3_sre
-plot(dvi1988)#plot serve per plottare
+#assegniamo l'oggetto dvi tramite<- a una funzione quindi è la differenza tra l'immagine nel infrarosso e nel rosso JK 
+dvi1988 <- p224r63_1988$B4_sre-p224r63_1988$B3_sre #$ si usa per leggare ogni singola aun dataset in questo caso le bande a l'immagine JK
+plot(dvi1988)#plot serve per plottare su R JK
 #exercice calculate dvi for 2011
-dvi2011 <- p224r63_2011$B4_sre-p224r63_2011$B3_sre #sre significa  difference vegetationion index JK
+dvi2011 <- p224r63_2011$B4_sre-p224r63_2011$B3_sre #sre significa  difference vegetationion index ,B4 è la banda dell'infrarosso JK
+#abbiamo usato appena un immagine che pixel per pixel  è la sostrazione dell' IRvicino e del Rosso se la pianta è sana il valore sarà alto JK
+#plot del dvi di 1988 si usa plot che serve per plottaggio di qualsiasi oggetto JK
 plot(dvi2011)#dvi legata alla vegetazione
 #esempio palette di  colore del dvi
-cldvi <- colorRampPalette(c('light blue','light green','green'))(100) # 
+#questa rappresentazione va dal blue al verde
+cldvi <- colorRampPalette(c('light blue','light green','green'))(100) # la funzione colorRampe palette si usa per aveere molte colore diverse JK
+#plot dvi 2011
+dvi2011 <- p224r63_2011$B4_sre-p224r63_2011$B3_sre 
+plot(dvi1988)#plot serve per plottare su R
 plot(dvi2011, col=cldvi)
 # multitemporal analysis
 #analisi multitemporale   per mostrare vegetazioni che hanno subito più o meno stress  JK 
+#facciamo la differenza di dvi che è dif dvi lo assegniamo con  <-  con la div di 2011 e 1988 JK
 difdvi <- dvi2011 - dvi1988 #difdvi è la differenza nell'indice di rilevazione JK
-plot(difdvi)    
-cldifdvi <- colorRampPalette(c('red','white','blue'))(100) # col è la funzione per colore, cl è la color rampe palette,red per valori bassi e blue per valori alti JK
+#abbiamo creato la nostra immagine che ci mostra quelle zone dove la vegetazione a sofferto di più JK
+#plotiamo la dif dvi JK 
+plot(difdvi) #difdiv la differenza di vegetation index JK
+#cambiamo la legenda con la colorRampe palette e usiamo il red per valori alti,white per intermedi e blue per vaori bassi
+cldifdvi <- colorRampPalette(c('red','white','blue'))(100) # col è la funzione per colore, cl è la colorRampe palette, JK
+#con il plot si vede in R si vede la differenza di vegetazione JK
 plot(difdvi, col=cldifdvi) 
-#visualize the output
-#multiframe 1998rgb,2011 rgb,difdiv rgb significa red green blue
-par(mfrow=c(3,1)) #par per vedere tutte le immagini insieme, 3.1 si usa per incollare l'immagine di 1998,2011,e la differenza di vegetazione nel tempo JK
-plotRGB(p224r63_1988, r=4, g=3, b=2, stretch="Lin")
-plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
+#visualize the output 
+#facciamo un par multiframe 1998rgb,2011 rgb,difdiv  per vedere le 3 immagini insieme.rgb significa red green blue JK
+par(mfrow=c(3,1)) # 3.1 si usa per incollare l'immagine di 1998,2011,e la differenza di vegetazione nel tempo JK
+#plottiamo la differenza di indice di vegetazione nel tempo, la prima immagine è quella del 1988(redgreen,blue),la seconda 2011 con le componente 4,3,2  JK
+plotRGB(p224r63_1988, r=4, g=3, b=2, stretch="Lin") #lin
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin") # lin
 plot(difdvi, col=cldifdvi)  
 dev.off()   
-#modificare la grana o resoluzione con  con la funzione aggregate JK
+#modificare la grana o resoluzione con  con la funzione aggregate con cui possiamo aggreagare i vari pixel ecreamo un immagine con pixel più grande JK
 #cominciamo con l'immagine del 2011
-p224r63_2011lr <- aggregate(p224r63_2011, fact=10) #lr significa low resolution, fact o fattore ,quanto lo vogliamo cambiare o il pixel JK
-p224r63_2011
-p224r63_2011lr
-par(mfrow=c(2,1)) #plottiamo 2 immagini
+#a l'ogetto attribuamo aggregate che va a creare un immagine con risoluzioe bassa 
+p224r63_2011lr <- aggregate(p224r63_2011, fact=10) #lr significa low resolution, fact o fattore ,quanto lo vogliamo cambiare o il pixel. JK
+p224r63_2011 #è l'immagine JK
+p224r63_2011lr # l'immagine a bassa risoluzione JK
+par(mfrow=c(2,1)) #plottiamo 2 immagini qquella di 2011 originale e 2011 a bassa risoluzione
 plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
 plotRGB(p224r63_2011lr, r=4, g=3, b=2, stretch="Lin")
-#lower resolution
+#lower resolution.risoluzione della nuova immagine
+#per vedere le caratteristiche dell'immagine precedente p224r63_2011 e mettiamo dentro R si vede le sur caratteristiche e la resoluzione JK
 p224r63_2011lr50 <- aggregate(p224r63_2011, fact=50) #50 volte il pixel
-p224r63_2011lr50    
+p224r63_2011lr50 #l'immagine a risoluzione 50   
 #original 30m risampled  a 1500m JK
-par(mfrow=c(3,1)) #plottiamo diverse immagini
+par(mfrow=c(3,1)) #plottiamo 3 immagini 2011,2011lr10 e 2011lr50 JK
 plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
-plotRGB(p224r63_2011lr, r=4, g=3, b=2, stretch="Lin")
+plotRGB(p224r63_2011lr10, r=4, g=3, b=2, stretch="Lin")
 plotRGB(p224r63_2011lr50, r=4, g=3, b=2, stretch="Lin")    
-# immagine 2011 con bassa risoluzione JK    
+# immagine 2011 con bassa risoluzione JK  
+#usiamo un dvi 2011 lr 50 
 dvi2011lr50 <- p224r63_2011lr50$B4_sre - p224r63_2011lr50$B3_sre 
-dev.off()
-#diminuire la risoluzione
+dev.off() #CHIUDERE IL GRAFICO
+
+#plot colorRampe palette di default di dvi 1988
+ 
+#diminuire la risoluzione  e aggregate l'immagine di 1988 al fattore 50
 # immagine 1988 con bassa risoluzione JK
 p224r63_1988lr50 <- aggregate(p224r63_1988, fact=50)
-#indice di vegetazione di 1988 a bassa resoluzione
-dvi1988lr50 <- p224r63_1988lr50$B4_sre - p224r63_1988lr50$B3_sre 
+#indice di vegetazione di 1988 a bassa resoluzione 
+dvi1988lr50 <- p224r63_1988lr50$B4_sre - p224r63_1988lr50$B3_sre #sottrazione infra rosso e rosso
  #differenza dei 2 indici di vegetazione   Di 2011 e del 1988 lr 50 a meno resoluzione
  difdvilr50 <- dvi2011lr50 - dvi1988lr50
  
