@@ -671,7 +671,7 @@ plotRGB(defor1, r=1, g=2, b=3, stretch="Lin")
 plotRGB(defor2, r=1, g=2, b=3, stretch="Lin")
 par(mfrow=c(2,2))plotRGB(defor1, r=1, g=2, b=3, stretch="Lin")plotRGB(defor2, r=1, g=2, b=3, stretch="Lin")# PAR SERVE PER IL PLOT DI 2 OGGETTI INSIEME
 #CLassificazione non supervisionata di defor 1 e 2
-library(RStoolbox) #prima chiamare r stoolbox e poi usare la funzione unsuperclass  JK
+library(RStoolbox) #prima chiamare Rstoolbox e poi usare la funzione unsuperclass  JK
 defor1_c <- unsuperClass(defor1, nClasses=2)
 d1c <- unsperClass(defor1, nClasses=2)
 plot(defor1_c$map)
@@ -681,85 +681,107 @@ plot(defor1_c$map, col=cl)
 cl <- colorRampPalette(c('green','black'))(100)
 plot(defor1_c$map, col=cl)
 #classificazione defor2
-#exercise classificazione con classi l immagine satellitare di defor2
+#exercise:classificazione con i 2 classi l immagine satellitare di defor2
+#la funzione unsuperclass per a seconda mappa 2_c classifichiamo l'imagine defor 2  poi fare il suo plot JK
 defor2_c <- unsuperClass(defor2, nClasses=2)
-plot(defor2_c$map)
-#mappe ottenute
-par(mfrow=c(2,1))
+plot(defor2_c$map, col=cl)
+dev.off()
+
+#mappe ottenute dopo plottagio delle 2 mappe
+par(mfrow=c(2,1)) #grafico con 2 righe e una colonna JK
 plot(defor1_c$map, col=cl)
 plot(defor2_c$map, col=cl)
-
-#la frequenza JK
+#invertiamo e righe e le colonne
+par(mfrow=c(1,2))
+#stima dei valori
+#la frequenza dei valori JK
 freq(defor1_c$map)
 #aree aperte 36827
 #foreste  304465
 totd1 <- 36827 +304465 
 totd1 341292
-#le proporzione
-
-#percentuale delle nostre frequenze JK
- percent1 <- freq(defor_1c$map) * 100 / totd1= 0,00227940
-#PERCENTUALI si mette su R percent1 per calcolare
+#calcolare le proporzione o le percentuali della mappa 1 JK
+percent1 <- freq(defor_1c$map) * 100 / totd1= 0,00227940
+#PERCENTUALI si mette su R percent1 per calcolare. percentuale della mappa è uguale lla frequenza delle mappe per 100 diviso tot1 JK
 #FORESTE=10.79047
 #aree =89.20953
-#la frequenza defor 2
- freq(defor2_c$map) #su R
- #foreste 179321
- #aree aperte 163405
- totd2 <- 179321 + 163405
+ 
+#mappa 2 
+#la frequenza defor 2 freq(defor2_c$map) #su R
+#foreste 179321
+#aree aperte 163405
+totd2 <- 179321 + 163405
 totd2=342726
- percent2 <- freq(d2c$map) * 100 / totd2
- percent2
- #foreste 52.32197
- #aree aperte 52.32197
- #vedere la copertura forestale prima e dopo la deforestazione
+#calcolo della percentuale della mappa 2
+percent2 <- freq(d2c$map) * 100 / totd2 
+percent2 #percentuale 2
+#foreste 52.32197
+#aree aperte 52.32197
+#vedere la copertura forestale prima e dopo la deforestazione
+#creare in dataset con tutti dati a l'interno,abbiamo una colonna che si chiama cover e lo associamo con 2 valori che sono agriculture e foreste per la prima colonna JK 
 cover <- c("Agriculture","Forest")
+#nella seconda colonna sono i valori  di agricoltura per faoresta nella prima mappa chiamata defor prima della deforestazione,il c serve prima di mettere 2 valori nelle parantesi JK
+#ater è per l'alatra colonna dopo la deforestazione  e inseriamo 2 valori a l'interno delle paratesi JK 
 before <- c(10.7,89.20)
 after <- c(47.67,52.32)
-#creare colonna con dati che decidiamo con dataframe
-output <- data.frame(cover,before,after)
-View(output) : cover before after
+#creare un  dataframe finale o output con valore di foresta e aree aperta e le associamo al dtaframe con una funzione che è data.frame JK
+output <- data.frame(cover,before,after)#data.frame crea una tabella con le colonne che decidiamo di chiamare befor e after
+View(output) : cover before after #serve per visualizzare
 1 Agriculture   10.7 47.67
 2      Forest   89.2 52.32
 10.7904752.32197
-
-library(ggplot2)#per plottare le mappe raster  JK
+#plottaare i valori
+library(ggplot2) o install packages(ggplot2) se non ancora installato # ggplot serve per plottare le mappe raster  JK
 
 # O5 MAGGIO
 library(raster)
 setwd("C:/lab/")
-load("defor.RData")
+load("defor.RData")# R.data salvato precedentemente
+#defor.Rdata è il dataset 
 ls()
-par(mfrow=c(1,2))
+par(mfrow=c(1,2)) #per avere le 2 immagini insieme
 cl <- colorRampPalette(c('black','green'))(100) # 
-plot(d1c$map, col=cl)
+plot(d1c$map, col=cl)#d1c è la classificazione che abbiamo fatto sull'immagine defor con il numero di classe uguale a 2
 plot(d2c$map, col=cl)
-#percentuale di foresta attuale e quella prcedente
+#dopo il dataframe abbiamo una tabella con la copertura e la percentuale di copertura prima e dopo il disboscamento JK
+#plottiamo le informazione JK 
 library(ggplot2)
+#andiamo a fare un grafico basatosulla libreria ggplot2,il dataset è output,cioè il dataset creato l'ultima volta,poi un dataframe conla copertura,la percentuale di prima deforestazione e dopo JK
+#le aestetics del grafico saranno per la x la copertura del suolo l'agricoltura e la forestazione e la y la percentuale di copertura prima della deforstazione JK
+#histogrammi della percentuale della copertura prima della deforestazione.il colore sarà funzione della copertura 
 ggplot(output, aes(x=cover, y=before, color=cover)) + #cover e la copertura ,geom barre sono le barre a creare, fill è la colorazione a l interno delle barre sara bianca  JK
-geom_bar(stat="identity", fill="white") # identity significa.......
+geom_bar(stat="identity", fill="white") # identity significa come statistica, che prendiamo direttamente i valori di copertura.geom.bar sono le barre che creamo. JK
+#fill è la colorazione a l'interno delle barre JK
 dev.off()
 
 #exercise plot histograms of landcover after deforestation
-ggplot(output, aes(x=cover, y=after, color=cover)) +
+library(ggplot2)
+#creamo un grafico JK
+ggplot(output, aes(x=cover, y=after, color=cover)) + #x la copertura e y la copertura dopo
 geom_bar(stat="identity", fill="white")
+dev.off() 
+#nuovo grafico:plot dei 2 histogrammi insieme .la funzione par non funzioa con ggplot2 quindi bisogna instalare un altro pachetto che si chiama gridExtra JK 
 install.packages("gridExtra")
-library(gridExtra)
+library(gridExtra) o require(gridExtra)
+#plot finale con tutti dati a l'internoe usiamo le funzione grid.arrange che va a prendere vari plot e le mette insieme a l'interno dello stesso grafico quindi gioca il ruolo di par JK
+#plot1 e 2 mettiamo l'uno accanto a l'altro per farlo dobbiamo assegnare il precedente ggplot a dei nomi che veranno inseriti al'interno di grid.arrange JK
 #grid.arrange(p1, p2, nrow = 1) # this needs griExtra  JK
+#prendiamo il precedente ggplot e li riassegamo un nome come grafico1 e grafico 2 per i 2, per farlo si mette la <- verso il nome
 #histograms of % di deforestazione
-
 grafico1 <- ggplot(output, aes(x=cover, y=before, color=cover)) + 
 geom_bar(stat="identity", fill="white")
 
 grafico2 <- ggplot(output, aes(x=cover, y=after, color=cover)) + 
 geom_bar(stat="identity", fill="white")
+ 
 #exercise use grid arrange to plot 2 graphs
 library(gridExtra)
+#usiamo grid.arrange per fare un grafico che usa 2 grafici a l'interno di una stessa finestra JK
+#usiamo grid.arrange si inserisce al posto di plot1 e 2 grafico 1 e 2,si assegna un numero di righe 1 JK
 grid.arrange(grafico1, grafico2, nrow = 1)
-
 #06 mmaggio
 library(ggplot2)
-    
+   
 cover <- c("Agriculture","Forest")
 before <- c(10.9,89.1)
 after <- c(48.2,51.8)
