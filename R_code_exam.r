@@ -810,12 +810,19 @@ grid.arrange(grafico1, grafico2, nrow = 1)
 
 8 RCODE MULTITEMP NO2
 #R code for analysing NO2 data from USA
-library(raster)
+#attraverso la funzione raster andiamo a caricare a prima immagine,solo quelle png. JK
+#la working directory della cartella lab,la prima immagine è EN0001png riassociamo l'immagine al nome EN01 JK
+#usiamo sola banda che riguarda l'azoto e quindi raster va bene invece di brick che importa interi paccheti di immagini satellitare JK
+# una volta importata il primo set la possiamo visualizzare con il plot di EN1 JK
+library(raster) #importiamo e singole immagini con la funzione raster JK
 setwd("C:/lab/")
 EN01 <- raster("EN_0001.png")
-plot(EN01)
-# EXERCISE importare tutte le immagine
- # EN <- stack(c("EN_0001.png","EN_0002.png","EN_0003.png","EN_0004.png","EN_0005.png","EN_0006.png","EN_0007.png","EN_0008.png","EN_0009.png","EN_0010.png","EN_0011.png","EN_0012.png","EN_0013.png")) importare le immagini tutte insieme  l'una su l' altra con a funzione stack  JK
+plot(EN01) # il grafico dell'azoto a gennaio JK
+# EXERCISE importare tutte le immagine 
+#con un ciclo si dice al sistema di prendere immagini a 1 a 13 e le importa dentro R, per prendere tutte le immagine insieme insieme  l'una su l'altra con la funzione stack JK
+#caricare tutti i file con ciclo for: 
+EN <- stack(c("EN_0001.png","EN_0002.png","EN_0003.png","EN_0004.png","EN_0005.png","EN_0006.png","EN_0007.png","EN_0008.png","EN_0009.png","EN_0010.png","EN_0011.png","EN_0012.png","EN_0013.png"))  
+#si può importare un immagine uno dopo l'altro con raster 
 EN02 <- raster("EN_0002.png")  
 plot(EN02) 
 EN03 <- raster("EN_0003.png")
@@ -858,25 +865,27 @@ plot(EN013)
 # brick
 # writeRaster(EN01[[3]], "snow2000r.tif")
  
-#per cambiare colori
- cl <- colorRampPalette(c('red','orange','yellow'))(100) #
-    
-cl <- colorRampPalette(c('red','orange','yellow'))(100) # 
+#plot delle 2 immagini iniziali e finali quindi inziamo con la colorRampe palette jk
+cl <- colorRampPalette(c('red','orange','yellow'))(100) #il giallo è il valore massimo di ossido di azoto   
+#plot digennaio 
 plot(EN01, col=cl)
+#plot di marzo 
 plot(EN13, col=cl)
-#per vederle inseme
+#per vederle inseme si usa l finzione par JK
 par(mfrow=c(1,2))
 plot(EN01, col=cl)
 plot(EN13, col=cl)
-# PER VEDERE DIFFERENZE  JK
-dev.off()
- # close the window
-difno2 <- EN13 - EN01
+dev.off() # close the window
+ 
+# PER VEDERE DIFFERENZE tra e 2 immaginni JK
+difno2 <- EN13 - EN01 #difno2 la differenza tra i 2
+#sabiliamo un nuovo colorRampe palette o cl
 cldif <- colorRampPalette(c('blue','black','yellow'))(100) #
+#plot della differenza difno2 jk
 plot(difno2, col=cldif)
-par(mfrow=c(4,4))
- # PLOT ALL THE DATA
-plot(EN01, col=cl)
+dev.off()
+# plottiamo tutte le mappe jk
+# ci sono 2 metodi: 1 metodo
 par(mfrow=c(4,4))
 plot(EN01, col=cl)
 plot(EN02, col=cl)
@@ -891,31 +900,31 @@ plot(EN10, col=cl)
 plot(EN11, col=cl)
 plot(EN12, col=cl)
 plot(EN13, col=cl)
-
- #Metodo per caricare tutti i file con ciclo for:
-    
+# 2 Metodo: 
+#spiegamo al sftware che si va a usare una lista di file.ls() jk 
 library(raster)
-
 setwd("~/lab/esa_no2")
 # put all files into the folder  JK
-
+#per tutte le immagine a l'interno di un certo range dalla prima al totale della r.list uso raster per importare tutti quei file che sono a l'interno della lista di file JK
 rlist=list.files(pattern=".png", full.names=T)
-
-#save raster into list
-#con lappy
-
+#andamo aprendere list.rast per farlo basandosi su raster rinominato r
+#per ogni i immagine a l'interno della lista che spiego al software deve caricare le immagini ed è fatto da un ciclo che si chiama for perche lavora per ogni immagine JK
+#list(files) è la lista JK
+#prendiamo la lista e lo applichiamo  alla funzione raster JK
 list_rast=lapply(rlist, raster)
-
+#usiamo direttamente la lista che va da 1 a 13 e andiamo a catturare ogni singolo file che comincia con EN jk
 #con ciclo for JK
 list_rast=list()
-for(i in 1:length(rlist)){
-  r=raster(rlist[[i]])
-  list_rast[[i]]=r} 
+for(i in 1:length(rlist)){ #lenght=intervallo
+r=raster(rlist[[i]]) #i sono i file,le immagini, raster cattura le singole bande JK
+list_rast[[i]]=r} 
 #6 maggio
 setwd("C:/lab/")
 load("EN.RData")
+ 
 setwd("C:/lab/esa_NO2")
-rlist <- list.files(pattern=".png")# list file e la lista dei file a l interno della cartella  JK
+ 
+rlist <- list.files(pattern=".png")# list file è la lista dei file a l interno della cartella  JK
 rlist #vedere la lista
 listafinale <- lapply(rlist, raster)
 listafinale
@@ -927,31 +936,40 @@ cl <- colorRampPalette(c('red','orange','yellow'))(100) #
 plot(EN, col=cl)
 
 #12 05 2020
-library(raster) #importa file a l interno di... JK
+#usiamo esa_no2 a l'interno della cartella lab,con estesione .png 
+library(raster) #importa file a l interno di R JK
 setwd("C:/lab/") 
+#importiamo dati che sono valori di di N02 da gennaio a marzo 
 setwd("C:/lab/esa_NO2")
+#usiamo le cartelle esno2 oltre alla cartella lab a l'interno della cartella lab ci sono dei file che sono tutti .png JK
+#usiamo la funzione list.file per anadare a importare questi file e associamo alla lista un nome JK 
+#se digitiamo il nome r.list vediamo che ci sono tutti file .png che abbiamo a disposizione 
 rlist <- list.files(pattern=".png")
+#la funzione lapply fa applicare la funzione raster alla lista che sono appena chiamati alla rlist.il nome sarà lista finale JK
 listafinale <- lapply(rlist, raster) #applicare LA FUNZIONE raster alla lista finale JK
 listafinale
- # make a stack   
+#impacchetare tutti i file con la funzione stack che è la composizione di tanti file insieme jk  
 EN <- stack(listafinale) # STACK è una serie di bande insieme a l interno di un immagine. EN è il pachetto JK
 EN <- stack(EN01,EN02,EN03,EN04,EN05,EN06,EN07,EN08,EN09,EN10,EN11,EN12,EN13)
- 
+#la differenza a l'interno di queste immagine tra luglio e marzo è la curva di gennaio
 difEN <- EN$EN_0013 - EN$EN_0001
-cld <- colorRampPalette(c('blue','white','red'))(100) # 
+#creamo un coloRampe palette per la differenza jk
+cld <- colorRampPalette(c('blue','white','red'))(100) 
+#plottiamo la differenza jk
 plot(difEN, col=cld)
 plot(EN, col=cl)
- boxplot(EN)#per avere diagramma   finale e vedere come variano le cose JK
- 
- boxplot(EN, horizontal=T)
- boxplot(EN, horizontal=T,outline=F)
- 
- boxplot(EN, horizontal=T,outline=F,axes=T)
- 
+#plottiamo l'intero set con la nuova color Rampe palette,usiamo boxplot per la media  jk
+boxplot(EN)#per avere diagramma   finale e vedere come varia l'azoto JK
+boxplot(EN, horizontal=T)#boxplot horizzontale jk
+boxplot(EN, horizontal=T,outline=F)#outline=falls per rimuovere outlayers jk
+boxplot(EN, horizontal=T,outline=F,axes=T)#mettere le assi axis=TRUE jk
  
  
- 9 R CODE SNOW
- setwd("C:/lab/")
+ 
+#19 maggio 
+9 R CODE SNOW
+#andare sul sito copernicus e caricare una delle immagini  di cryosfere he è snow cover
+setwd("C:/lab/")
 install.packages("ncdf4")
 library(ncdf4)
 library(raster)
