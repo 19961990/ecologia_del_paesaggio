@@ -966,11 +966,11 @@ boxplot(EN, horizontal=T,outline=F,axes=T)#mettere le assi axis=TRUE jk
  
  
  
-#19 maggio 
+# 27 maggio 
 9 R CODE SNOW
 #andare sul sito copernicus e caricare una delle immagini  di cryosfere he è snow cover
 setwd("C:/lab/")
-install.packages("ncdf4")
+install.packages("ncdf4")#serve utilizzare i dati nc da copernicus
 library(ncdf4)
 library(raster)
 snowmay <- raster("c_gls_SCE500_202005180000_CEURO_MODIS_V1.0.1.nc")
@@ -1087,49 +1087,67 @@ ggplot(output, aes(x=time, y=npatches, color="red")) + geom_bar(stat="identity",
  
 
 ##11 R CODE CROP
+#simulation exam 
+#fare un zoom e un ritaglio su un immagine globale     
 setwd("C:/lab/snow/") 
-#caricare tutte le immagini snow con raster o apply   
-#richiamare library raster
-rlist <- list.files(pattern="snow")  #in questo caso non tif
-rlist    
-#save raster into list
-  #con lapply   
-list_rast <- lapply(rlist, raster)
-# uso della funzione stack     
+# exercise caricare tutte le immagini snow insieme  da copernicus(da 2000 a 2020) 
+#il pattern potrebbe essere snow     
+#richiamare library(raster)
+#richiamare la libreria ncdf4
+library(ncdf4) #per utilizzare i dati nc da copernicus JK
+#la lista di file con la funzione rlist ,con tutti file che iniziano con snow     
+rlist <- list.files(pattern="snow")  #in questo caso non tif ma snow
+rlist #  lista di file 
+#tutti i file importati con il pachetto raster JK
+#creare una lista dei singoli file che abbiamo a disposizione da 2000 a 2020 poi si applica con lapply  a funzione raser a ogni singolo file JK
+list_rast <- lapply(rlist, raster)#lapply va applicare la funzione di riferimento a l'interno della lista di file JK
+#Gli accordiamo a tutti un unico stack che si chiama snow.multitemp jk      
 snow.multitemp <- stack(list_rast) 
- #plottare tutta le immagine snow     
-  clb <- colorRampPalette(c('dark blue','blue','light blue'))(100) # per plottare le immagini tutti insieme
-plot(snow.multitemp,col=clb)   
- # fare lo zoom di un certa extensione  
-  snow.multitemp  
-  plot(snow.multitemp$snow2010r, col=clb) 
-    
-extension <- c(6, 18, 40, 50)
+#facciamo un colorRampe palette       
+clb <- colorRampPalette(c('dark blue','blue','light blue'))(100) # per plottare le immagini tutti insieme JK
+#plottare tutta le immagine snow ,non usiamo un par perche usiamo uno stack JK     
+plot(snow.multitemp,col=clb)  #colorRmampe palette light blue 
+# fare lo zoom sul'immagine e un crop jk
+#usiamo la funzione zoom e il nome dell'immagine più l'estenzione JK 
+#si definisce prima l'estenzione di un certo file mettendo ad esempio il numero dell'estenzione xmax,xmin,ymax,ymin
+#si ritaglia l'immagine in base a l'estenzione definito da noi     
+
+#plot di una delle immagine legiamo il nostro stack files attraverso il $ a l'immagine che vogliamo plottare   
+plot(snow.multitemp$snow2010r, col=clb) #colorRampe palette light blu
+#dobbiamo vedere i nomi che compongono lo stack multitemp quindi mettiamo il nome snow multitemp e con la funzione names vediamo il nome dei vari file JK
+snow.multitemp
+names
+#Esempio se prendiamo l'immagine del 2010 e facciamo uno plot,vogliamo zoomare sulla parte italiana
+plot(snow.multitemp$snow2010r, col=clb) 
+#facciamo un rettangolo sulla parte che ci interessa o definiamo delle coordinate,potremo dire che a nuova estenzione si da in questo modo JK     
+extension <- c(6, 18, 40, 50)#dove xmin=6°,xmx=18°,ymin=30°,ymax=50°
+#zoom dell'intero set
+#appplichiamo la funzione zoom di raster a l'immagine di 2010 e l'estenzione     
 zoom(snow.multitemp$snow2010r, ext=extension)
-    
-extension <- c(6, 18, 35, 50)
-zoom(snow.multitemp$snow2010r, ext=extension)
+extension <- c(6, 18, 35, 50)     
+# nella parte sud manca qualche grado quindi ridefiniamo l'estenzione cambiando quella originale   
 extension <- c(6, 20, 35, 50)
-zoom(snow.multitemp$snow2010r, ext=extension)
+#andiamo a definire un zoom     
+zoom(snow.multitemp$snow2010r, ext=extension)#zoom più nome dell'immagine e l'estenzione
 #disegnare l'estensione con draw extend()
 #lanciare prima lo plot dell'immagine originale poi disegnare un rettangolino su l'estenzione JK
 plot(snow.multitemp$snow2010r, col=clb)
- zoom(snow.multitemp$snow2010r, ext=drawExtent())
- zoom(snow.multitemp$snow2010r, ext=drawExtent())
- plot(snow.multitemp$snow2010r, col=clb)
- zoom(snow.multitemp$snow2010r, ext=drawExtent())
+zoom(snow.multitemp$snow2010r, ext=drawExtent())#estenzione=drawExtend
  
-#fare un crop che taglia l'immagine sulla zona che vogliamo ritagliare
-extension <- c(6, 20, 35, 50)
-snow2010r.italy <- crop(snow.multitemp$snow2010r, extension)
+#fare un crop che taglia l'immagine sulla zona che vogliamo ritagliare definendo le coordinate JK
+extension <- c(6, 20, 35, 50)#estenzione
+snow2010r.italy <- crop(snow.multitemp$snow2010r, extension)#la funzione crop fa una nuova immagine
 plot(snow2010r.italy, col=clb)    
- #exercice  crop the italy extend to whole stack back of snow   
- snow.multitemp.italy <- crop(snow.multitemp, extension)
- plot(snow.multitemp.italy, col=clb)
-plot(snow.multitemp.italy, col=clb, zlim=c(20,200)) #zlimp serve per limitare la legenda per tutte le immagini JK
-     
-#boxplot o previsione con la funzione prediction  #permette di prendere i valori delle immagini per vedere come varia la neve esattamente durante gli anni JK
-boxplot(snow.multitemp.italy, horizontal=T,outline=F)
+#exercice  crop the italy extend on the whole stack of snow 
+#plot della nuova immagine con il crop fatto prima.range delle varie legenda le mettiamo tutti uguali
+#vedimamo i valori minimi e e massimi per tutte le legende e mettiamo il nome snow mutitemp.italy     
+snow.multitemp.italy <- crop(snow.multitemp, extension)
+plot(snow.multitemp.italy, col=clb)
+#cambiamo tutte le legende e facciamo variare tra 20 a 200 in questo modo avranno la stessa variazione JK
+#i vari range, l'argomento si chiama zlim   JK  
+plot(snow.multitemp.italy, col=clb, zlim=c(20,200)) #zlim serve per limitare la legenda per tutte le immagini JK    
+#boxplot in horizontale o previsione con la funzione prediction  #permette di prendere i valori intermedi e variazione dei valori di copertura nevosa.JK
+boxplot(snow.multitemp.italy, horizontal=T,outline=F)#outliers=falls  sono valori molto fuori della distribuzione JK
      
      
 
@@ -1175,6 +1193,10 @@ m1 <- sdm(Occurrence ~ elevation + precipitation + temperature + vegetation, dat
 p1 <- predict(m1, newdata=preds)
 plot(p1, col=cl)
 points(species[species$Occurrence == 1,], pch=16)
+
+
+
+
 #EXAM PROJECT
 
 
