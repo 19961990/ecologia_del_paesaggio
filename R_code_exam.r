@@ -972,23 +972,25 @@ boxplot(EN, horizontal=T,outline=F,axes=T)#mettere le assi axis=TRUE jk
 setwd("C:/lab/")
 install.packages("ncdf4")#serve utilizzare i dati nc da copernicus
 library(ncdf4)
-library(raster)
-snowmay <- raster("c_gls_SCE500_202005180000_CEURO_MODIS_V1.0.1.nc")
+library(raster)#la funzione raster si usa per importare i dati JK
+snowmay <- raster("c_gls_SCE500_202005180000_CEURO_MODIS_V1.0.1.nc")#tra le virgolette c'è l'immagine,snoway erve a....
 cl <- colorRampPalette(c('darkblue','blue','light blue'))(100)
 #esercizio plot snow cover with the cl palette
 #import snow data,importare tutti i file insIeme
 setwd("C:/lab/snow")
 # put all files into the folder
-
-rlist=list.files(pattern=".png", full.names=T)
+#la lista di file con la funzione rlist ,con tutti file.png
+rlist=list.files(pattern=".png", full.names=T)#rlist è la lista di file
 rlist <- list.files(pattern=".tif")
 rlist # permette di vedere la lista delle immagini sul documento dentro R JK
-
+#tutti i file importati con il pachetto raster JK
+#creare una lista dei singoli file che abbiamo a disposizione da 2000 a 2020 poi si applica con lapply  a funzione raser a ogni singolo file JK
+list_rast <- lapply(rlist, raster)#lapply va applicare la funzione di riferimento a l'interno della lista di file JK
+#Gli accordiamo a tutti un unico stack che si chiama snow.multitemp jk      
+snow.multitemp <- stack(list_rast) 
 list_rast <- lapply(rlist, raster)
-#save raster into list
-#con lappy
 list_rast=lapply(rlist, raster)
-snow.multitemp <- stack(list_rast)
+#plottiamo la nuova immagine jk
 plot(snow.multitemp,col=cl)
 #plotttare la prima e l ultima immagine  JK
 par(mfrow=c(1,2))
@@ -996,94 +998,107 @@ plot(snow.multitemp$snow2000r, col=cl)
 plot(snow.multitemp$snow2020r, col=cl)
 #plottare le 2 con un limite di 250
 par(mfrow=c(1,2))
-plot(snow.multitemp$snow2000r, col=cl, zlim=c(0,250))
+plot(snow.multitemp$snow2000r, col=cl, zlim=c(0,250))#zlim è il range,il limite della legenda
 plot(snow.multitemp$snow2020r, col=cl, zlim=c(0,250))
 dev.off()
 # vedere la differenza tra le 2 mappe con colore diverso dal dif cl JK
+difsnow = snow.multitemp$snow2020r - snow.multitemp$snow2000r #legiamo attraverso $ l'immagine di 2020 allo stack
 difsnow = snow.multitemp$snow2020r - snow.multitemp$snow2000r
-difsnow = snow.multitemp$snow2020r - snow.multitemp$snow2000r
-cldiff <- colorRampPalette(c('blue','white','red'))(100) 
+cldiff <- colorRampPalette(c('blue','white','red'))(100) #cldiff èla colorRampe palette della differenza di copertura di neve
 plot(difsnow, col=cldiff)
 
 ## prediction
-
 require(raster)
-require(rgdal)
+require(rgdal)#rgdal serve a 
 predicted.snow.2025.norm <- 
 #since code tak time u can download 
 predicted.snow.2025.norm <- raster("predicted.snow.2025.norm.tif")
 plot(predicted.snow.2025.norm, col=cl)
 
-
-
+  
+ 
+#26maggio 
 10 R CODE PATCHES.r
 setwd("C:/lab/")
 library(raster) 
-# writeRaster(d1c$map,"d1c.tif")
-# writeRaster(d2c$map,"d2c.tif")
-d1c <- raster("d1c.tif")#caricare la prima mappa,usare la funzione brick per caricare tutte le bande e raster per un solo bando JK
+library(ggplot2) 
+# writeRaster(d1c$map,"d1c.tif")#d1c e d2c sono le mappe classificate dell'altra volta
+# writeRaster(d2c$map,"d2c.tif")# la mappa è collegta aal processo di classificazione con il $
+#con writeraster sono stati scritti questi file a l'interno della cartella lab
+#per caricare i dati abbiamo 2 funzioni  brick o per caricare tutte le bande e raster per un solo bando JK,
+#caricare una mappa con foreste contro tutto il resto quidi usiamo raster
+#diamo un nome alle mappe quindi d1c.tif si chiama d1c e l'altra d2c.tif si chiama d2c,si carica i dati a l'interno di R 
+d1c <- raster("d1c.tif")#caricare la prima mappa,assegnamo la mappa con  <- 
 d2c <- raster("d2c.tif") # land cover 1= agriculture, land cover 2=forest
-par(mfrow=c(1,2))#con par mettiamo più plot a l interno del grafico finale JK
-cl <- colorRampPalette(c('green','black'))(100) #
-plot(d1c,col=cl)
+#facciamo un plot dei 2 file(agriculture,forest) con un par  e un colorRampe palette jk
+par(mfrow=c(1,2))# tutti 2 insieme
+cl <- colorRampPalette(c('green','black'))(100) 
+plot(d1c,col=cl)#colore=cl colorRampe palette jk
 plot(d2c,col=cl)
-cellStats(d1c.forest.patches, max)#number of patches identified
- 
-par(mfrow=c(1,2))#la mappa coretta perche la foresta è la classe 2 e quella dell algicultura la classe 1 JK
+#invertire la colorRampe palette 
+par(mfrow=c(1,2))#la mappa coretta perche la foresta è la classe 2 e quella della foresta e la 1 l'algicultura JK
 cl <- colorRampPalette(c('black','green'))(100) #cellStats(d1c.forest.patches, max)#number of patches identified
 plot(d1c,col=cl)
 plot(d2c,col=cl)
- # Exercise: repeat the whole process for d2c
+#andiamo a fare in modo che nella nostra mappa la clasee che corrisponde a l'agricoltura vada a un valore nullo passiamo dalla mappa precedente in cui avevamo foreste e agricoltura jk
+#ognuno classificata estreamo solo la foresta perche dopo faremo dei calcoli che riguarda la foresta e vogliamo andare a estrarre la foresta per fare questi calcoli JK
+#per farlo basta annullare tutto quello che non è foressta e la funzione è cbind che elimina alcuni valori e li mettiamo con i non valori NA jk
+#tutto attraverso la funzion reclassify del pachetto raster  e riclassifica una certa immagine raster quindi riassegna dei valori JK
+#abbiamo assegnato il valore 2 alla foresta ,riclassifichiamo solo la mappa per etrarre solo la mappa jk
+#prendiamo la mappa d1c applichiamo la funzione riclassify eliminando tutto quello che non è foresta e associamo la funzione a d1c category forest o d1cfor JK
+#riclassificare la nuova immagine 
+d1c.cat.for <- reclassify(d1c, cbind(1, NA))#il valore che annulliamo è 1
+d1c.for <- reclassify(d1c, cbind(1,NA)) 
+#ripresentare la mappa con un par
+par(mfrow=c(1,2))
+cl <- colorRampPalette(c('black','green'))(100) #
+plot(d1c.for,col=cl)
+plot(d1c.for) 
+ 
+# Exercise: repeat the whole process for d2c
 # land cover 1= agriculture, land cover 2=forest
-d2c.cat.for <- reclassify(d2c, cbind(1, NA))
-
-d2c.forest.patches <- clump(d2c.cat.for)
+d2c.cat.for <- reclassify(d2c, cbind(1, NA))#
+d2c.for <- reclassify(d2c, cbind(1,NA))#reclassifcare la classe 1 JK
+par(mfrow=c(1,2))
+plot(d2c)
 cl <- colorRampPalette(c('dark 
 blue','blue','green','orange','yellow','red'))(100) # 
 plot(d2c.forest.patches,col=cl)
-
-cellStats(d2c.forest.patches, max)#number of patches identified
-#per annullare alcuni valori  si usa Cbind NA attraverso la funzione reclassify JK
-d1c.for <- reclassify(d1c, cbind(1,NA))
-par(mfrow=c(1,2))
-cl <- colorRampPalette(c('black','green'))(100) #
-plot(d1c,col=cl)
-plot(d1c.for)
-par(mfrow=c(1,2))
-cl <- colorRampPalette(c('black','green'))(100) #
-plot(d1c,col=cl)
-plot(d1c.for, col=cl)
-d2c.for <- reclassify(d2c, cbind(1,NA))#reclassifcare la classe 1 JK
-par(mfrow=c(1,2))
-plot(d1c)
-plot(d2c)
-#creare i patch
+#creare i patch.unire tutti i pixel vicino per creare ogni singola patch
+#ragrupare i pixel vicini in una singola patch useremo la fumzione clump che aggrega pixel vicini e gli mette come singoli patch
 install.packages("igraph")
 library(igraph) # for pacthes
-d1c.for.pacthes <- clump(d1c.for)
+d1c.for.pacthes <- clump(d1c.for)#clump di tutti pixel di d1
 d2c.for.pacthes <- clump(d2c.for)
-writeRaster(d1c.for.pacthes, "d1c.for.patches.tif")# writE raster  usato per scrivere  i file d1c e d2c nella cartella lab JK
+d2c.forest.patches <- clump(d2c.cat.for)#clump significa aggregare
+ 
+cellStats(d1c.forest.patches, max)#number of patches identified
+ 
+writeRaster(d1c.for.pacthes, "d1c.for.patches.tif")# writeraster  usato per scrivere  i file d1c e d2c nella cartella lab JK
 writeRaster(d2c.for.pacthes, "d2c.for.patches.tif")
-#plottare le mappe uno accanto a l altro JK
+ 
+#plottare le 2 mappe uno accanto a l altro JK
 par(mfrow=c(1,2))
 plot(d1c.for.pacthes)
 plot(d2c.for.pacthes
 clp <- colorRampPalette(c('dark blue','blue','green','orange','yellow','red'))(100) # 
 par(mfrow=c(1,2))
-plot(d1c.for.pacthes, col=clp)
-plot(d2c.for.pacthes, col=clp)
+#creare una nuova colorRampe palette clp      
+plot(d1c.for.pacthes, col=clp)# clp colore dei patch jk
+plot(d2c.for.pacthes, col=clp) 
+#quanti patch sono state create
 #si aggiunge la funzione time per avere before and after deforestation JK
 time <- c("Before deforestation","After deforestation")
-npatches <- c(301,1212)
-
-# plot results:
+npatches <- c(301,1212)#d1c e d2c
+#creare un dataframe che si chiama output
+# plot results con la libreria ggplot2 k vcon variazione di patch nel tempo
 time <- c("Before deforestation","After deforestation")
 npatches <- c(568,1920)
-output <- data.frame(time,npatches)#output per vedere il plot finale JK
+output <- data.frame(time,npatches)#output per vedere il plot finale con le colonne time e numero di patch  JK
 attach(output)
-library(ggplot2)
-ggplot(output, aes(x=time, y=npatches, color="red")) + geom_bar(stat="identity", fill="white")
-#l altra avevamo visto la variazione dell aria adesso abbiamo visto la variazione dei patch JK
+
+ggplot(output, aes(x=time, y=npatches, color="red")) + geom_bar(stat="identity", fill="white")#aes sono le estetics,la geomatria a histogrammi,colore interno è white JK
+#l'altra avevamo visto la variazione dell aria adesso abbiamo visto la variazione dei patch JK
  
 
 ##11 R CODE CROP
@@ -1154,13 +1169,13 @@ boxplot(snow.multitemp.italy, horizontal=T,outline=F)#outliers=falls  sono valor
 #12 SPECIES Distribution MODELING     
  #non acciamo il setw perche usiamo il paccheto sdm    
 install.packages("sdm") 
- library(raster)
+library(raster)
 library(rgdal)    
- #carichiamo il file a l interno di rgdal 
- system.file("external/species.shp", package="sdm") 
+#carichiamo il file a l interno di rgdal 
+system.file("external/species.shp", package="sdm") 
 system.file("external/species.shp", package="sdm")
-[1] "C:/Users/HP/Documents/R/win     
- species <- shapefile(file)    
+#[1] "C:/Users/HP/Documents/R/win     
+species <- shapefile(file)    
 plot(species)
 #visualizzare le presenze dalle assenze
 plot(species[species$Occurrence == 1,],col='blue',pch=16) per punti uguale a 1 colorati in blu poi aggiungiamo plot uguaali a 0 colorato in rosso    
@@ -1169,13 +1184,13 @@ points(species[species$Occurrence == 0,],col='red',pch=16) i punti dove la speci
 path <- system.file("external", package="sdm") 
 
 lst <- list.files(path=path,pattern='asc$',full.names = T) #
- preds <- stack(lst)
+preds <- stack(lst)
  
 cl <- colorRampPalette(c('yellow','orange','red')) (100)
- cl <- colorRampPalette(c('blue','orange','red','yellow')) (100)
+cl <- colorRampPalette(c('blue','orange','red','yellow')) (100)
 plot(preds, col=cl)
 plot(preds$elevation, col=cl)
- #tutti i punti dove la specie e presente ? quindi sta bene in bassa elevation
+#tutti i punti dove la specie e presente ? quindi sta bene in bassa elevation
 points(species[species$Occurrence == 1,], pch=16)
 # con la temperatura vegiamo come si comporta ?qui li piaciono temperature medio basse o basse
 plot(preds$temperature, col=cl)
