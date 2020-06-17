@@ -1108,6 +1108,7 @@ setwd("C:/lab/snow/")
 # exercise caricare tutte le immagini snow insieme  da copernicus(da 2000 a 2020) 
 #il pattern potrebbe essere snow     
 #richiamare library(raster)
+library(raster)     
 #richiamare la libreria ncdf4
 library(ncdf4) #per utilizzare i dati nc da copernicus JK
 #la lista di file con la funzione rlist ,con tutti file che iniziano con snow     
@@ -1213,11 +1214,72 @@ points(species[species$Occurrence == 1,], pch=16)
 
 
 #EXAM PROJECT
+setwd("C:/lab/SWI/") 
+# exercise caricare tutte le immagini snow insieme  da copernicus(da 2000 a 2020) 
+#il pattern potrebbe essere snow     
+#richiamare library(raster)
+library(raster)     
+#richiamare la libreria ncdf4
+library(ncdf4) #per utilizzare i dati nc da copernicus JK
+#la lista di file con la funzione rlist ,con tutti file che iniziano con SWI    
+rlist <- list.files(pattern="SWI")  #in questo caso non tif ma swi
+rlist #  lista di file 
+#tutti i file importati con il pachetto raster JK
+#creare una lista dei singoli file che abbiamo a disposizione da 2015 a 2020 poi si applica con lapply  a funzione raster a ogni singolo file JK
+list_rast <- lapply(rlist, raster)#lapply va applicare la funzione di riferimento a l'interno della lista di file JK
+#Gli accordiamo a tutti un unico stack che si chiama swi.multitemp jk      
+swi.multitemp <- stack(list_rast) 
+#facciamo un colorRampe palette       
+clb <- colorRampPalette(c('dark blue','blue','light blue'))(100) # per plottare le immagini tutti insieme JK
+#plottare tutta le immagine snow ,non usiamo un par perche usiamo uno stack JK     
+plot(swi.multitemp,col=clb)  #colorRmampe palette light blue 
+#l immagine in R cambiando nome  IN swi 2015   
+swi2015 <- raster("c_gls_SWI1km_201505221200_CEURO_SCATSAR_V1.0.1.nc")       
+# fare lo zoom sul'immagine e un crop jk 
+#usiamo la funzione zoom e il nome dell'immagine più l'estenzione JK 
+#si definisce prima l'estenzione di un certo file mettendo ad esempio il numero dell'estenzione xmax,xmin,ymax,ymin
+#si ritaglia l'immagine in base a l'estenzione definito da noi     
 
+#plot di una delle immagine legiamo il nostro stack files attraverso il $ a l'immagine che vogliamo plottare   
+plot(swi.multitemp$Surface.State.Flag.3, col=clb) #colorRampe palette light blu 
+#dobbiamo vedere i nomi che compongono lo stack multitemp quindi mettiamo il nome snow multitemp e con la funzione names vediamo il nome dei vari file JK
+swi.multitemp
+names
+#Esempio se prendiamo l'immagine del 2010 e facciamo uno plot,vogliamo zoomare sulla parte italiana
+plot(swi.multitemp$swi2015, col=clb) 
+#facciamo un rettangolo sulla parte che ci interessa o definiamo delle coordinate,potremo dire che a nuova estenzione si da in questo modo JK     
+extension <- c(-11, 40, 35, 72)#dove xmin=6°,xmx=18°,ymin=30°,ymax=50°
+#zoom dell'intero set
+#appplichiamo la funzione zoom di raster a l'immagine di 2015 e l'estenzione     
+zoom(swi.multitemp$Surface.State.Flag.3, ext=extension)
+extension <- c(6, 18, 35, 50)     
+# nella parte sud manca qualche grado quindi ridefiniamo l'estenzione cambiando quella originale   
+extension <- c(11, 35, 30, 50)   
+#disegnare l'estensione con draw extend()
+#lanciare prima lo plot dell'immagine originale poi disegnare un rettangolino su l'estenzione JK
+plot(swi.multitemp$Surface.State.Flag.3, col=clb)
+zoom(swi.multitemp$Surface.State.Flag.3, ext=drawExtent())#estenzione=drawExtend
+ 
+#fare un crop che taglia l'immagine sulla zona che vogliamo ritagliare definendo le coordinate JK
+extension <- c(6, 20, 35, 50)#estenzione
+Surface.State.Flag.3.italy <- crop(swi.multitemp$Surface.State.Flag.3, extension)#la funzione crop fa una nuova immagine
+plot(Surface.State.Flag.3.italy, col=clb)    
+#exercice  crop the italy extend on the whole stack of snow 
+#plot della nuova immagine con il crop fatto prima.range delle varie legenda le mettiamo tutti uguali
+#vedimamo i valori minimi e e massimi per tutte le legende e mettiamo il nome snow mutitemp.italy     
+snow.multitemp.italy <- crop(snow.multitemp, extension)
+plot(snow.multitemp.italy, col=clb)
+#cambiamo tutte le legende e facciamo variare tra 20 a 200 in questo modo avranno la stessa variazione JK
+#i vari range, l'argomento si chiama zlim   JK  
+plot(snow.multitemp.italy, col=clb, zlim=c(20,200)) #zlim serve per limitare la legenda per tutte le immagini JK    
+#boxplot in horizontale o previsione con la funzione prediction  #permette di prendere i valori intermedi e variazione dei valori di copertura nevosa.JK
+boxplot(snow.multitemp.italy, horizontal=T,outline=F)#outliers=falls  sono valori molto fuori della distribuzione JK     
 
-
-
-
+c_gls_SWI1km_201505221200_CEURO_SCATSAR_V1.0.1.nc
+c_gls_SWI1km_202005211200_CEURO_SCATSAR_V1.0.1
+c_gls_SWI1km_201505211200_CEURO_SCATSAR_V1.0.1
+se voglio dare il nome swi 2015
+   swi2015  <- ("c_gls_SWI1km_201505221200_CEURO_SCATSAR_V1.0.1.nc")
 
  
     
