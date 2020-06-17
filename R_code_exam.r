@@ -1168,47 +1168,70 @@ boxplot(snow.multitemp.italy, horizontal=T,outline=F)#outliers=falls  sono valor
      
 
 #12 SPECIES Distribution MODELING     
- #non acciamo il setw perche usiamo il paccheto sdm    
-install.packages("sdm") 
+#non facciamo il setwd perche usiamo il paccheto sdm    
+install.packages("sdm")
+library(sdm)     
 library(raster)
-library(rgdal)    
-#carichiamo il file a l interno di rgdal 
-system.file("external/species.shp", package="sdm") 
+library(rgdal) #permette di gestire al meglio dati raster e vettoriali a l'interno del software  
+#carichiamo il file a l interno del pachetto sdm 
+#shp è un file del sistema quindi usiamo la funzione system.file, carichiamo il file esterno 
+#digitiamo system file e la mettiamo al'inter no di R     
+system.file("external/species.shp", package="sdm") #sp.shp è un file vettoriale sono dei coordinate x,y JK
 system.file("external/species.shp", package="sdm")
-#[1] "C:/Users/HP/Documents/R/win     
-species <- shapefile(file)    
-plot(species)
-#visualizzare le presenze dalle assenze
-plot(species[species$Occurrence == 1,],col='blue',pch=16) per punti uguale a 1 colorati in blu poi aggiungiamo plot uguaali a 0 colorato in rosso    
-points(species[species$Occurrence == 0,],col='red',pch=16) i punti dove la specie e assente  
- 
+#caricare la part grafica con la funzione shapefile ,così possiamo usare quel dato per mappare quello chhe è la distribuzione delle specie allo stato attuale JK   
+#[1] "C:/Users/HP/Documents/R/win 
+#il dataset è formato da 2 punti con delle coordinate,una certa area di studio,e ognuno dei puntiè relazionato a l'interno di una tabella che raccoglie dati di occurence JK      
+#digitiamo species     
+species <- shapefile(file)  #rgdal serve per shapefile JK 
+plot(species) #per vedere i punti a terra della specie JK
+#visualizzare le presenze dalle assenze(occurence)
+# species è il dataset con una sola colonna  JK 
+#in R uguale è== quando si mette una condizione,la virgola interrompe la numerazione JK     
+#prendiamo il dataset specie al'interno di questo per tutte le occorenzeche appartengono al dataset species  se solo sono uguali a 1     
+plot(species[species$Occurrence == 1,],col='blue',pch=16) #per punti uguale a 1 colorati in blu poi aggiungiamo plot uguali a 0 colorato in rosso  JK
+#solo quei punti dove la specie non è stata trovata.occorenze uguale a zero
+points(species[species$Occurrence == 0,],col='red',pch=16)# la funzione points aggiunge dei punti al plot precedente .$occurence per  vedere la colonna JK
+#vediamo le variabili ambientali,la prima è la temperatura JK
+#individuare le variabili ambientali che si trovano nela cartella external JK
+#importare il path cioè il percorso che ci porta alla cartella.a l'interno di sdm si trova a cartella esternal  JK    
 path <- system.file("external", package="sdm") 
-
-lst <- list.files(path=path,pattern='asc$',full.names = T) #
-preds <- stack(lst)
- 
-cl <- colorRampPalette(c('yellow','orange','red')) (100)
-cl <- colorRampPalette(c('blue','orange','red','yellow')) (100)
+#a l'interno della cartella c'è una serie di files e si usa list.files,il pattern è asc che è un formato
+lst <- list.files(path=path,pattern='asc$',full.names = T) # T =true
+#usiamo il codice per importare i vari predictori che sono delle variabili ambientali che servono a prevedere quell che sarà la distribuzione della specie nello spazio JK
+ #quindi le variabili sono le precipitazione,indice di vegetazione,la temperatura  
+#facciamo uno stack di tutte le variabili.diamo un nome commune preds che sono quelle variabili che son ousate per prevedere quello che srà la distribuzione della specie       
+preds <- stack(lst) #preds è una funzione per prevedere JK
+list.files 
+#scegliamo una bella colorRampe palette che si chiama cl  
+cl <- colorRampPalette(c('yellow','orange','red')) (100) #mio
+cl <- colorRampPalette(c('blue','orange','red','yellow')) (100) #per il prof
+ #plot dei vari predictori    
 plot(preds, col=cl)
+#plot di una singola variabile elevation leagto al preds col $     
 plot(preds$elevation, col=cl)
+#mettiamo sopra i punti con la funzione point con occorenze uguale a 1    
 #tutti i punti dove la specie e presente ? quindi sta bene in bassa elevation
 points(species[species$Occurrence == 1,], pch=16)
 # con la temperatura vegiamo come si comporta ?qui li piaciono temperature medio basse o basse
 plot(preds$temperature, col=cl)
 points(species[species$Occurrence == 1,], pch=16)
-per le precipitazione come si comporta? e intermedia quindi
+#per le precipitazione come si comporta? è intermedia 
 plot(preds$precipitation, col=cl)
 points(species[species$Occurrence == 1,], pch=16)
 #indice di vegetazione
-plot della nostra vegetazione con nostro punto a l interno
+#plot della nostra vegetazione con  i nostri punti a l'interno
 plot(preds$vegetation, col=cl)
 points(species[species$Occurrence == 1,], pch=16)
-#model
-dati <- sdmData(train=species, predictors=preds)
-m1 <- sdm(Occurrence ~ elevation + precipitation + temperature + vegetation, data=d, methods='glm')
-p1 <- predict(m1, newdata=preds)
+#modello delle variabili che si chiama glm
+#usiamo a l'interno del pachetto sdm la funzione sdmDtata che al'interno c'è train che significa training e predictors  JK   
+dati <- sdmData(train=species, predictors=preds) #train  sono tutti punti raccolti a terra JK
+# usiamo la funzione sdm , m1 è il modello     
+m1 <- sdm(Occurrence ~ elevation + precipitation + temperature + vegetation, data=d, methods='glm')#la ~ significa uguale JK
+#calcolo finale della previsione della y su tutto il nostro dataset   JK  
+p1 <- predict(m1, newdata=preds)#la funzione p1 è predict lo associamo a predict la previsione di dove si troverà la specie.JK
+#usiamo la colorRmape palette precedente cl    
 plot(p1, col=cl)
-points(species[species$Occurrence == 1,], pch=16)
+points(species[species$Occurrence == 1,], pch=16) # la mappa di previsione
 
 
 
@@ -1218,7 +1241,8 @@ setwd("C:/lab/SWI/")
 # exercise caricare tutte le immagini snow insieme  da copernicus(da 2000 a 2020) 
 #il pattern potrebbe essere snow     
 #richiamare library(raster)
-library(raster)     
+library(raster) 
+install.packages("sp")      
 #richiamare la libreria ncdf4
 library(ncdf4) #per utilizzare i dati nc da copernicus JK
 #la lista di file con la funzione rlist ,con tutti file che iniziano con SWI    
@@ -1230,29 +1254,33 @@ list_rast <- lapply(rlist, raster)#lapply va applicare la funzione di riferiment
 #Gli accordiamo a tutti un unico stack che si chiama swi.multitemp jk      
 swi.multitemp <- stack(list_rast) 
 #facciamo un colorRampe palette       
-clb <- colorRampPalette(c('dark blue','blue','light blue'))(100) # per plottare le immagini tutti insieme JK
+clb <- colorRampPalette(c('dark green','blue','light green'))(100) # per plottare le immagini tutti insieme JK
 #plottare tutta le immagine snow ,non usiamo un par perche usiamo uno stack JK     
 plot(swi.multitemp,col=clb)  #colorRmampe palette light blue 
+ dev.off()    
 #l immagine in R cambiando nome  IN swi 2015   
-swi2015 <- raster("c_gls_SWI1km_201505221200_CEURO_SCATSAR_V1.0.1.nc")       
+swi2015 <- raster("c_gls_SWI1km_201505221200_CEURO_SCATSAR_V1.0.1.nc")
+plot(swi2015)    
+swi2020 <- raster("c_gls_SWI1km_202005211200_CEURO_SCATSAR_V1.0.1.nc")
+plot(swi2020)     
 # fare lo zoom sul'immagine e un crop jk 
 #usiamo la funzione zoom e il nome dell'immagine più l'estenzione JK 
 #si definisce prima l'estenzione di un certo file mettendo ad esempio il numero dell'estenzione xmax,xmin,ymax,ymin
 #si ritaglia l'immagine in base a l'estenzione definito da noi     
-
-#plot di una delle immagine legiamo il nostro stack files attraverso il $ a l'immagine che vogliamo plottare   
-plot(swi.multitemp$Surface.State.Flag.3, col=clb) #colorRampe palette light blu 
+Surface.State.Flag.3=swi2020 no
+#plot di una delle immagine legiamo il nostro stack files attraverso il $ a l'immagine 1 di 2015 che vogliamo plottare   
+plot(swi.multitemp$Surface.State.Flag.1, col=clb) #colorRampe palette light blu plot(swi.multitemp$swi2020, col=clb) 
 #dobbiamo vedere i nomi che compongono lo stack multitemp quindi mettiamo il nome snow multitemp e con la funzione names vediamo il nome dei vari file JK
 swi.multitemp
 names
-#Esempio se prendiamo l'immagine del 2010 e facciamo uno plot,vogliamo zoomare sulla parte italiana
-plot(swi.multitemp$swi2015, col=clb) 
+#Esempio se prendiamo l'immagine del 2015 e facciamo uno plot,vogliamo zoomare sulla parte italiana
+plot(swi.multitemp$Surface.State.Flag.1,, col=clb) 
 #facciamo un rettangolo sulla parte che ci interessa o definiamo delle coordinate,potremo dire che a nuova estenzione si da in questo modo JK     
 extension <- c(-11, 40, 35, 72)#dove xmin=6°,xmx=18°,ymin=30°,ymax=50°
 #zoom dell'intero set
-#appplichiamo la funzione zoom di raster a l'immagine di 2015 e l'estenzione     
+#appplichiamo la funzione zoom di raster a l'immagine di 2020 e l'estenzione     
 zoom(swi.multitemp$Surface.State.Flag.3, ext=extension)
-extension <- c(6, 18, 35, 50)     
+extension <- c(5, 35, 30, 50)     
 # nella parte sud manca qualche grado quindi ridefiniamo l'estenzione cambiando quella originale   
 extension <- c(11, 35, 30, 50)   
 #disegnare l'estensione con draw extend()
@@ -1261,28 +1289,138 @@ plot(swi.multitemp$Surface.State.Flag.3, col=clb)
 zoom(swi.multitemp$Surface.State.Flag.3, ext=drawExtent())#estenzione=drawExtend
  
 #fare un crop che taglia l'immagine sulla zona che vogliamo ritagliare definendo le coordinate JK
-extension <- c(6, 20, 35, 50)#estenzione
+extension <- c(5, 35, 30, 50)#estenzione
 Surface.State.Flag.3.italy <- crop(swi.multitemp$Surface.State.Flag.3, extension)#la funzione crop fa una nuova immagine
 plot(Surface.State.Flag.3.italy, col=clb)    
 #exercice  crop the italy extend on the whole stack of snow 
 #plot della nuova immagine con il crop fatto prima.range delle varie legenda le mettiamo tutti uguali
 #vedimamo i valori minimi e e massimi per tutte le legende e mettiamo il nome snow mutitemp.italy     
-snow.multitemp.italy <- crop(snow.multitemp, extension)
-plot(snow.multitemp.italy, col=clb)
+swi.multitemp.italy <- crop(swi.multitemp, extension)
+plot(swi.multitemp.italy, col=clb)
 #cambiamo tutte le legende e facciamo variare tra 20 a 200 in questo modo avranno la stessa variazione JK
 #i vari range, l'argomento si chiama zlim   JK  
-plot(snow.multitemp.italy, col=clb, zlim=c(20,200)) #zlim serve per limitare la legenda per tutte le immagini JK    
+plot(swi.multitemp.italy, col=clb, zlim=c(10,100)) #zlim serve per limitare la legenda per tutte le immagini JK    
 #boxplot in horizontale o previsione con la funzione prediction  #permette di prendere i valori intermedi e variazione dei valori di copertura nevosa.JK
-boxplot(snow.multitemp.italy, horizontal=T,outline=F)#outliers=falls  sono valori molto fuori della distribuzione JK     
+boxplot(swi.multitemp.italy, horizontal=T,outline=F) #outliers=falls  sono valori molto fuori della distribuzione JK     
 
 c_gls_SWI1km_201505221200_CEURO_SCATSAR_V1.0.1.nc
 c_gls_SWI1km_202005211200_CEURO_SCATSAR_V1.0.1
 c_gls_SWI1km_201505211200_CEURO_SCATSAR_V1.0.1
-se voglio dare il nome swi 2015
-   swi2015  <- ("c_gls_SWI1km_201505221200_CEURO_SCATSAR_V1.0.1.nc")
+
+# put all files into the folder
+#la lista di file con la funzione rlist ,con tutti file.png
+rlist=list.files(pattern=".nc", full.names=T)#rlist è la lista di file
+rlist <- list.files(pattern=".nc")
+rlist # permette di vedere la lista delle immagini sul documento dentro R JK
+#tutti i file importati con il pachetto raster JK
+#creare una lista dei singoli file che abbiamo a disposizione da 2000 a 2020 poi si applica con lapply  a funzione raser a ogni singolo file JK
+list_rast <- lapply(rlist, raster)#lapply va applicare la funzione di riferimento a l'interno della lista di file JK
+#Gli accordiamo a tutti un unico stack che si chiama snow.multitemp jk      
+swi.multitemp <- stack(list_rast) 
+list_rast <- lapply(rlist, raster)
+list_rast=lapply(rlist, raster)
+#plottiamo la nuova immagine jk
+plot(swi.multitemp,col=clb)
+#plotttare la prima e l ultima immagine  JK
+par(mfrow=c(1,2))
+plot(swi.multitemp$Surface.State.Flag.3, col=clb)
+plot(snow.multitemp$swi2020, col=clb)
+#plottare le 2 con un limite di 250
+par(mfrow=c(1,2))
+plot(swi.multitemp$Surface.State.Flag.3, col=clb)   #zlim è il range,il limite della legenda
+
+dev.off()
+# vedere la differenza tra le 2 mappe con colore diverso dal dif cl JK
+difswi = swi.multitemp$Surface.State.Flag.3 - swi.multitemp$Surface.State.Flag.2  #legiamo attraverso $ l'immagine di 2020 allo stack
+
+cldiff <- colorRampPalette(c('blue','white','red'))(100) #cldiff èla colorRampe palette della differenza di copertura di neve
+plot(difswi, col=cldiff)
 
  
-    
+library(raster) #importiamo e singole immagini con la funzione raster JK
+setwd("C:/lab/")
+#si può importare un immagine uno dopo l'altro con raster      
+swi2015 <- raster("EN_0001.png")
+SWI2015 <- raster("c_gls_SWI1km_201505221200_CEURO_SCATSAR_V1.0.1.nc")
+plot(SWI2015)
+SWI2020 <- raster("c_gls_SWI1km_202005211200_CEURO_SCATSAR_V1.0.1.nc")      
+plot(SWI2020) # il grafico dell- indice del suolo nel 2020 JK
+#  o con brick     
+SWI2015<- brick("c_gls_SWI1km_201505221200_CEURO_SCATSAR_V1.0.1.nc")
+SWI2020 <- brick("c_gls_SWI1km_202005211200_CEURO_SCATSAR_V1.0.1.nc")   
+# EXERCISE importare tutte le immagine 
+#con un ciclo si dice al sistema di prendere immagini a 1 a 2 e le importa dentro R, per prendere tutte le immagine insieme insieme  l'una su l'altra con la funzione stack JK
+#caricare tutti i file con ciclo for: 
+SWI <- stack c("c_gls_SWI1km_201505221200_CEURO_SCATSAR_V1.0.1.nc,c_gls_SWI1km_202005211200_CEURO_SCATSAR_V1.0.1.nc")) 
+SWI <- stack( SWI2015,SWI2020)
+EN <- stack(EN01,EN02,EN03,EN04,EN05,EN06,EN07,EN08,EN09,EN10,EN11,EN12,EN13)                       
+plot(SWI)
+# writeRaster(EN01[[3]], "snow2000r.tif")
+ 
+#plot delle 2 immagini  quindi inziamo con la colorRampe palette jk
+cl <- colorRampPalette(c('red','yellow'))(100) #il giallo è il valore massimo di ossido di azoto   
+#plot di maggio 2015 
+plot(SWI2015, col=cl)
+#plot di maggio 2020 
+plot(SWI2020, col=cl)
+#per vederle inseme si usa l finzione par JK
+par(mfrow=c(1,2))
+plot(SWI2015, col=cl)
+plot(SWI2020, col=cl)
+dev.off() # close the window
+ 
+# PER VEDERE DIFFERENZE tra e 2 immaginni JK
+difSWI <- SWI2015 - SWI2020 #difSWI la differenza tra i 2
+#sabiliamo un nuovo colorRampe palette o cl
+cldif <- colorRampPalette(c('blue','green'))(100) #
+#plot della differenza difno2 jk
+plot(difSWI, col=cldif)
+plot(difSWI, col=cld)
+plot(SWI, col=cl) 
+dev.off()
+# plottiamo tutte le mappe jk
+# ci sono 2 metodi: 1 metodo
+par(mfrow=c(1,2))
+plot(SWI2015, col=cl)
+plot(SWI2020, col=cl)
+
+# 2 Metodo: 
+#spiegamo al software che si va a usare una lista di file.ls() jk 
+library(raster)
+setwd("C:/lab/SWI")
+# put all files into the folder  JK
+#per tutte le immagine a l'interno di un certo range dalla prima al totale della r.list uso raster per importare tutti quei file che sono a l'interno della lista di file JK
+rlist=list.files(pattern=".nc", full.names=T)
+#andamo aprendere list.rast per farlo basandosi su raster rinominato r
+#per ogni i immagine a l'interno della lista che spiego al software deve caricare le immagini ed è fatto da un ciclo che si chiama for perche lavora per ogni immagine JK
+#list(files) è la lista JK
+#prendiamo la lista e lo applichiamo  alla funzione raster JK
+list_rast=lapply(rlist, raster)
+#usiamo direttamente la lista che va da 1 a 13 e andiamo a catturare ogni singolo file che comincia con EN jk
+#con ciclo for JK
+list_rast=list()
+for(i in 1:length(rlist)){ #lenght=intervallo
+r=raster(rlist[[i]]) #i sono i file,le immagini, raster cattura le singole bande JK
+list_rast[[i]]=r} 
+ 
+setwd("C:/lab/")
+load("SWI.RData")
+setwd("C:/lab/SWI")
+rlist <- list.files(pattern=".png")# list file è la lista dei file a l interno della cartella  JK
+rlist #vedere la lista
+listafinale <- lapply(rlist, raster)
+listafinale   
+SWI <- stack(listafinale)
+cl <- colorRampPalette(c('red','yellow'))(100) #
+plot(SWI, col=cl)
+
+#usiamo SWI a l'interno della cartella lab,con estesione .nc
+
+#plottiamo l'intero set con la nuova color Rampe palette,usiamo boxplot per la media  jk
+boxplot(SWI)#per avere diagramma   finale e vedere come varia l'azoto JK
+boxplot(SWI, horizontal=T)#boxplot horizzontale jk
+boxplot(SWI, horizontal=T,outline=F)#outline=falls per rimuovere outlayers jk
+boxplot(SWI, horizontal=T,outline=F,axes=T)#mettere le assi axis=TRUE jk   
+chercher la fonction write raste et l-utiliser     
      
-     
-     
+ 
